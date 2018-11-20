@@ -76,7 +76,7 @@ whenDocumentLoaded(() => {
   data = 0;
 
   
-  d3.csv("../data/dataviz_lat_lon.csv",
+  d3.csv("{{ site.baseurl }}/data/dataviz_lat_lon.csv",
     function(d) {
       return {
           plat : d.plat,
