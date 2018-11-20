@@ -24,7 +24,8 @@ function show_roads(data){
 */
 	
 	let mymap = L.map('mapid',{
-		 trackResize: false
+		 trackResize: false,
+		 renderer: L.canvas()
 	}).setView([46.519962, 6.64], 15);
 	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -37,30 +38,37 @@ function show_roads(data){
 	let couples = []
 	let colore=[];
 
-	for (var i=0; i< 20;i++){
-		console.log(data[i]);
+	for (var i=0; i< data.length;i++){
 		lats=data[i].road_lat;
 		lngs=data[i].road_lng;
 		
-		/*let r = Math.floor(Math.random() * 255);
+		lats=lats.filter(function(d){
+			return !isNaN(d);
+		})
+		lngs=lngs.filter(function(d){
+			return !isNaN(d);
+		})
+		let r = Math.floor(Math.random() * 255);
 		let g = Math.floor(Math.random() * 255);
 		let b = Math.floor(Math.random() * 255);
 		
-		colore.append("rgb("+r+" ,"+g+","+ b+")"); */
-		console.log(lats);
-		console.log(lngs);
-		
-		couples.push(lats.map(function(e, j) {
+		colore=("rgba("+r+" ,"+g+","+ b+")"); 		
+		let road=lats.map(function(e, j) {
 			return [e, lngs[j]];
-			}))
+			});
+		couples.push(road);
+		let line= L.polyline(road,{color: colore,renderer: mymap.renderer});
+		line.addTo(mymap);
 		
+		plat = data[i].plat;
+		plng = data[i].plng;
+		L.circleMarker([plat,plng],{color:colore,radius:10,renderer:mymap.renderer}).addTo(mymap);
 		
+		dlat = data[i].dlat;
+		dlng = data[i].dlng;
+		L.circleMarker([dlat,dlng],{color:colore,radius:10,renderer:mymap.renderer}).addTo(mymap);
 
-		
-		//L.marker([couple.road_lat,couple.road_lng]).addTo(mymap);
 	}
-	console.log(couples);
-	L.polyline(couples).addTo(mymap);
 }
 
 whenDocumentLoaded(() => {
