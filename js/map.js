@@ -75,7 +75,6 @@ whenDocumentLoaded(() => {
 
   data = 0;
 
-	console.log(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv")
   d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
     function(d) {
       return {

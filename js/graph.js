@@ -77,7 +77,7 @@ whenDocumentLoaded(() => {
   height = canvas.height,
   searchRadius = 20;
 
-  d3.csv("../data/dataviz_lat_lon.csv",
+  d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
     function(d) {
       return {
           plat : d.plat,
