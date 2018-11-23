@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+	<html lang="en">
+	<meta charset="utf-8"/>
+
+		{% include common_import.html %}
+
+		<script type="text/javascript" src="js/graph.js"></script>
+
+		<head>
+			<title>{{ page.title }}</title>
+			<!-- link to main stylesheet -->
+			{% include common_css.html %}
+		</head>
+		<body>
+			{% include nav.html %}
+			{{ content }}
+		</body>
+	</html>
