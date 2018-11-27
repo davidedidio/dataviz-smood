@@ -1,2 +1,5 @@
 name: Hank Quinlan, Horrible Cop
 markdown: kramdown
+webrick:
+  headers:
+    Access-Control-Allow-Origin: "*"
