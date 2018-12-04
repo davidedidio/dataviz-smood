@@ -21,17 +21,15 @@ function remove_element_from_array(array, element){
 	}
 }
 
-var link_map;
 class Graph {
 
 	constructor(data) {
-		this.nodes = this.build_nodes(data)//.slice(0, 1000);
-		this.links = this.build_links(data)//.slice(0, 1000);
+		this.starting_nodes = data.map((d) => d.road[0]);
 
-		console.log(this.nodes);
-		console.log(this.links);
+		this.nodes = this.build_nodes(data);
+		this.links = this.build_links(data);
 
-		link_map = {};
+		let link_map = {};
 
 		for(let n of this.nodes){
 			link_map[n.id] = {};
@@ -52,7 +50,6 @@ class Graph {
 
 		let has_work = true;
 		while(has_work){
-			console.log(Object.keys(link_map).length)
 			has_work = false;
 
 			for(let s in link_map){
@@ -75,19 +72,34 @@ class Graph {
 			}
 		}
 
-		this.nodes = Object.keys(link_map).map((x) => ({"id":parseInt(x)}) );
+		this.nodes = Object.keys(link_map).map((x) => ({group: "nodes", "data": {"id":parseInt(x)}}) );
 		this.links = []
-		Object.keys(link_map).forEach( (x) => Object.keys(link_map[x]).forEach( (y) => this.links.push( {"source": parseInt(x), "target": parseInt(y), "num": link_map[x][y]} ) ) )
+		Object.keys(link_map).forEach( (x) => Object.keys(link_map[x]).forEach( (y) => this.links.push(
+			{group: "edges",
+			 data: {"source": parseInt(x), "target": parseInt(y), "num": link_map[x][y]}} ) ) )
 
-
-		console.log(link_map);
-
-		this.build_simulation()
+		this.build_simulation_cytoscape()
 	}
 
+	build_simulation_cytoscape(){
+		cy = cytoscape({
+			container: document.getElementById('cy'),
+			style: [{	"selector": 'node',
+								"style": {
+									"background-color": "black"
+								}
+							},{
+								"selector": 'edge',
+								"style": {
+									"curve-style": "bezier",
+									"width": function( ele ){ return Math.log(1+ ele.data('num')) }
+							}}],
+			layout: {name: 'breadthfirst'},
+			elements: this.nodes.concat(this.links)
+		});
+	}
 
-
-	build_simulation(){
+	build_simulation_d3_force(){
 		  this.simulation = d3.forceSimulation(this.nodes)
 		      .force("link", d3.forceLink(this.links).id(d => d.id))
 		      .force("charge", d3.forceManyBody())
@@ -138,19 +150,21 @@ class Graph {
 
 }
 
-var canvas;
-var context;
-var width;
-var height;
-var searchRadius;
+//var canvas;
+//var context;
+//var width;
+//var height;
+//var searchRadius;
+var cy
 
 whenDocumentLoaded(() => {
 
-  canvas = document.querySelector("canvas"),
-  context = canvas.getContext("2d"),
-  width = canvas.width,
-  height = canvas.height,
-  searchRadius = 20;
+
+  //canvas = document.querySelector("canvas"),
+  //context = canvas.getContext("2d"),
+  //width = canvas.width,
+  //height = canvas.height,
+  //searchRadius = 20;
 
   d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
     function(d) {
