@@ -4,7 +4,8 @@
 
 		<script type="text/javascript" src="lib/leaflet/leaflet.js"></script>
 		<script type="text/javascript" src="js/map.js"></script>
-
+		<script type="text/javascript" src="lib/leaflet.polylineoffset.js"></script>
+		<script type="text/javascript" src="lib/leaflet-heat.js"></script>
 		{% include common_import.html %}
 
 		<head>
@@ -16,5 +17,6 @@
 		<body>
 			{% include nav.html %}
 			{{ content }}
+			<canvas id="myCanvas"></canvas>
 		</body>
 	</html>
