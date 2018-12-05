@@ -20,11 +20,14 @@ function remove_element_from_array(array, element){
   	array.splice(index, 1);
 	}
 }
+var tst;
 
 class Graph {
 
 	constructor(data) {
-		this.starting_nodes = data.map((d) => d.road[0]);
+		//data = [data[2], data[3]];
+		this.starting_nodes = new Set(data.map((d) => d.road[0]));
+		this.ending_nodes = new Set(data.map((d) => d.road[d.road.length-1]));
 
 		this.nodes = this.build_nodes(data);
 		this.links = this.build_links(data);
@@ -41,43 +44,81 @@ class Graph {
 			}else{
 				link_map[l.source][l.target]++
 			}
-			if (link_map[l.target][l.source] == undefined){
+			/*if (link_map[l.target][l.source] == undefined){
 				link_map[l.target][l.source] = 1;
 			}else{
 				link_map[l.target][l.source]++
-			}
+			}*/
 		}
 
 		let has_work = true;
 		while(has_work){
 			has_work = false;
 
-			for(let s in link_map){
-				if(Object.keys(link_map[s]).length == 2){
-					let obj = link_map[s];
-					let keys = Object.keys(obj);
+			for(let node_from in link_map){
+				for(let node in link_map[node_from]){
+					let to_keys = Object.keys(link_map[node])
+					if(to_keys.length == 1) {
+						let node_to = Object.keys(link_map[node])[0];
+						if(link_map[node_from][node] == link_map[node][node_to] && link_map[node_to][node] == link_map[node][node_from]){
+							has_work = true;
+							link_map[node_from][node_to] = link_map[node_from][node];
+							delete link_map[node_from][node];
+							delete link_map[node][node_to];
+							let a = 0;
+						}
+					}else if(to_keys.includes(node_from) && to_keys.length == 2){
+						let node_to = to_keys[0];
+						if (node_to == node_from){
+							node_to = to_keys[1]
+						}
 
-					if(link_map[keys[0]] != undefined && link_map[keys[1]] != undefined){
-						has_work = true;
+						if(link_map[node_from][node] == link_map[node][node_to] && link_map[node_to][node] == link_map[node][node_from]){
+							has_work = true;
+							link_map[node_from][node_to] = link_map[node_from][node];
+							delete link_map[node_from][node];
+							delete link_map[node][node_to];
 
-						link_map[keys[0]][keys[1]] = link_map[keys[1]][s];
-						link_map[keys[1]][keys[0]] = link_map[keys[0]][s];
-
-						delete link_map[keys[0]][s];
-						delete link_map[keys[1]][s];
-
-						delete link_map[s];
+							link_map[node_to][node_from] = link_map[node_to][node];
+							delete link_map[node_to][node];
+							delete link_map[node][node_from];
+							let a=0;
+						}
 					}
 				}
 			}
 		}
 
-		this.nodes = Object.keys(link_map).map((x) => ({group: "nodes", "data": {"id":parseInt(x)}}) );
+		let node_to_keep = new Set();
+		for(let node_from in link_map){
+			for(let node_to in link_map[node_from]){
+				if(link_map[node_from][node_to] > 0){
+					node_to_keep.add(node_from)
+					node_to_keep.add(node_to)
+				}
+			}
+		}
+		for(let node in link_map){
+			if(!node_to_keep.has(node)){
+				delete link_map[node]
+			}
+		}
+
+		console.log(Object.keys(link_map).length)
+
+		this.nodes = Object.keys(link_map)
+			.map((x) => parseInt(x) )
+			.map((x) => ({group: "nodes",
+								   "data": {"id":x,
+													  "starting_node": this.starting_nodes.has(x),
+												    "ending_node": this.ending_nodes.has(x),
+												    "position": nodes_pos_dict[x] }}));
 		this.links = []
 		Object.keys(link_map).forEach( (x) => Object.keys(link_map[x]).forEach( (y) => this.links.push(
 			{group: "edges",
 			 data: {"source": parseInt(x), "target": parseInt(y), "num": link_map[x][y]}} ) ) )
 
+		tst = link_map
 		this.build_simulation_cytoscape()
 	}
 
@@ -86,38 +127,21 @@ class Graph {
 			container: document.getElementById('cy'),
 			style: [{	"selector": 'node',
 								"style": {
-									"background-color": "black"
+									"background-color": function( ele ){return (ele.data('starting_node')) ? "green" : (ele.data('ending_node') ? "red" : "black")}
+								/*"label": function(ele){return ele.data("id")}*/
 								}
 							},{
 								"selector": 'edge',
 								"style": {
 									"curve-style": "bezier",
-									"width": function( ele ){ return Math.log(1+ ele.data('num')) }
+									"width": function( ele ){ return 0.05* ele.data('num')},
+									"target-arrow-shape": "triangle"
 							}}],
-			layout: {name: 'breadthfirst'},
+			layout: {name: 'preset',
+							 "positions": function(ele){return {"x":(ele.data("position").lon - 6) * 100000, "y":(-ele.data("position").lat + 46) * 100000}}
+			},
 			elements: this.nodes.concat(this.links)
 		});
-	}
-
-	build_simulation_d3_force(){
-		  this.simulation = d3.forceSimulation(this.nodes)
-		      .force("link", d3.forceLink(this.links).id(d => d.id))
-		      .force("charge", d3.forceManyBody())
-		      .force("x", d3.forceX(width / 2))
-		      .force("y", d3.forceY(height / 2))
-		      .on("tick", () => ticked(this.nodes, this.links));
-
-		  this.simulation.force("x").strength(0.2);
-		  this.simulation.force("y").strength(0.2);
-
-		  d3.select(canvas)
-			    .on("mousemove", mousemoved)
-			    .call(d3.drag()
-			        .container(canvas)
-			        .subject(dragsubject)
-			        .on("start", dragstarted)
-			        .on("drag", dragged)
-			        .on("end", dragended));
 	}
 
 	build_links(data){
@@ -150,86 +174,29 @@ class Graph {
 
 }
 
-//var canvas;
-//var context;
-//var width;
-//var height;
-//var searchRadius;
-var cy
+var cy;
+var nodes_pos_dict;
 
 whenDocumentLoaded(() => {
+	d3.json(URL_FULL + BASE_URL + "/data/nodes_dict.json")
+		.then(function(dict){
+		nodes_pos_dict = dict
+
+		d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
+	    function(d) {
+	      return {
+	          plat : d.plat,
+	          plng : d.plng,
+	          dlat : d.dlat,
+	          dlng : d.dlng,
+	          time : d.t,
+	          road : parse_csv_list(d.road)
+	        };
+	    }).then(function(data) {
+	      graph = new Graph(data);
+	    },);
+	});
 
 
-  //canvas = document.querySelector("canvas"),
-  //context = canvas.getContext("2d"),
-  //width = canvas.width,
-  //height = canvas.height,
-  //searchRadius = 20;
-
-  d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
-    function(d) {
-      return {
-          plat : d.plat,
-          plng : d.plng,
-          dlat : d.dlat,
-          dlng : d.dlng,
-          time : d.t,
-          road : parse_csv_list(d.road)
-        };
-    }).then(function(data) {
-      graph = new Graph(data);
-    },);
 
 });
-
-function ticked(nodes, links) {
-  context.clearRect(0, 0, width, height);
-  links.forEach(drawLink);
-
-
-  context.beginPath();
-  nodes.forEach(drawNode);
-  context.fill();
-}
-
-function drawLink(d) {
-		context.beginPath();
-		//context.lineCap="round";
-		context.lineWidth = Math.log(d.num);
-    context.moveTo(d.source.x, d.source.y);
-		context.lineTo(d.target.x, d.target.y);
-		context.strokeStyle = "#222";
-	  context.stroke();
-}
-
-function drawNode(d) {
-    context.moveTo(d.x, d.y);
-    context.arc(d.x, d.y, 8, 0, 2 * Math.PI);
-}
-
-function dragstarted() {
-    if (!d3.event.active) graph.simulation.alphaTarget(0.3).restart();
-    d3.event.subject.fx = d3.event.subject.x;
-    d3.event.subject.fy = d3.event.subject.y;
-}
-
-function dragged() {
-    d3.event.subject.fx = d3.event.x;
-    d3.event.subject.fy = d3.event.y;
-}
-
-function dragended() {
-    if (!d3.event.active) graph.simulation.alphaTarget(0);
-    d3.event.subject.fx = null;
-    d3.event.subject.fy = null;
-}
-
-function dragsubject() {
-    return graph.simulation.find(d3.event.x, d3.event.y, searchRadius);
-}
-
-function mousemoved() {
-    var a = this.parentNode,
-    	m = d3.mouse(this),
-    	d = graph.simulation.find(m[0], m[1], searchRadius);
-}
