@@ -6,7 +6,37 @@
 
 <script type="text/javascript">
 
-  var BASE_URL = "{{ site.baseurl }}";
-  var URL_FULL = "{{ site.url }}";
+	var BASE_URL = "{{ site.baseurl }}";
+	var URL_FULL = "{{ site.url }}";
+
+	function setup_sidebar(sidebar_id, open_button_id, optional_elem=null){
+		$(document).ready(function () {
+	        $(sidebar_id).mCustomScrollbar({
+	            theme: "minimal"
+	        });
+
+	        $(sidebar_id+' .dismiss').on('click', function () {
+	            // hide sidebar
+	            $(sidebar_id).removeClass('active');
+	            if (optional_elem!=null) {$(optional_elem).css('left','0')}
+	        });
+
+	        $(open_button_id).on('click', function () {
+	            // open sidebar
+	            $(sidebar_id).addClass('active');
+	            if (optional_elem!=null) {$(optional_elem).css('left','300px')}
+	        });
+	    });
+	}
+
+	setup_sidebar('#options-sidebar', '#open-options-sidebar')
+	setup_sidebar('#insights-sidebar', '#open-insights-sidebar', '.leaflet-control-container .leaflet-left')
 
 </script>
+
+<!-- Font Awesome JS -->
+<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
+<!-- jQuery Custom Scroller CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>

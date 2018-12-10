@@ -123,19 +123,29 @@ class Graph {
 	}
 
 	build_simulation_cytoscape(){
+		let p_nodes_size = 40;
+		let int_nodes_size = 20;
+		let d_nodes_size = 30;
+
 		cy = cytoscape({
 			container: document.getElementById('cy'),
 			style: [{	"selector": 'node',
 								"style": {
-									"background-color": function( ele ){return (ele.data('starting_node')) ? "green" : (ele.data('ending_node') ? "red" : "black")},
-								"label": function(ele){return ele.data("id")}
+									"background-color": function( ele ){return (ele.data('starting_node')) ? "#ff1a30" : (ele.data('ending_node') ? "#1aff85" : "black")},
+									"width": function( ele ){return (ele.data('starting_node')) ? p_nodes_size : (ele.data('ending_node') ? d_nodes_size : int_nodes_size)},
+									"height": function( ele ){return (ele.data('starting_node')) ? p_nodes_size : (ele.data('ending_node') ? d_nodes_size : int_nodes_size)},
+									"opacity": "0.9"
+								/*"label": function(ele){return ele.data("id")}*/
 								}
 							},{
 								"selector": 'edge',
 								"style": {
 									"curve-style": "bezier",
-									"width": function( ele ){ return Math.sqrt(ele.data('num'))},
-									"target-arrow-shape": "triangle"
+									"width": function( ele ){ return 1.2*Math.pow(ele.data('num'), 1/2)},
+									"line-color": "rgb(255,255,255)",
+									"target-arrow-shape": "triangle",
+									"target-arrow-color": "rgb(255,255,255)",
+									"opacity": "0.66"
 							}}],
 			layout: {name: 'preset',
 							 "positions": function(ele){return {"x":(ele.data("position").lon - 6) * 100000, "y":(-ele.data("position").lat + 46) * 100000}}
