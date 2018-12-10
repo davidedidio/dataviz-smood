@@ -25,7 +25,7 @@ var tst;
 class Graph {
 
 	constructor(data) {
-		//data = [data[2], data[3]];
+		//data = data.slice(0,5);
 		this.starting_nodes = new Set(data.map((d) => d.road[0]));
 		this.ending_nodes = new Set(data.map((d) => d.road[d.road.length-1]));
 
@@ -127,14 +127,14 @@ class Graph {
 			container: document.getElementById('cy'),
 			style: [{	"selector": 'node',
 								"style": {
-									"background-color": function( ele ){return (ele.data('starting_node')) ? "green" : (ele.data('ending_node') ? "red" : "black")}
-								/*"label": function(ele){return ele.data("id")}*/
+									"background-color": function( ele ){return (ele.data('starting_node')) ? "green" : (ele.data('ending_node') ? "red" : "black")},
+								"label": function(ele){return ele.data("id")}
 								}
 							},{
 								"selector": 'edge',
 								"style": {
 									"curve-style": "bezier",
-									"width": function( ele ){ return 0.05* ele.data('num')},
+									"width": function( ele ){ return Math.sqrt(ele.data('num'))},
 									"target-arrow-shape": "triangle"
 							}}],
 			layout: {name: 'preset',
