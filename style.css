@@ -2,3 +2,94 @@
   height: 100vh;
   width: 100vw;
 }
+
+nav.bg-dark {
+    background-color: #1d2227!important;
+}
+
+#cy {
+	background-color: #343a40;
+}
+
+.navbar-nav {
+	margin: 0 auto;
+}
+
+nav a {
+	color: rgba(255,255,255,.5);
+}
+
+nav a:hover {
+	color: rgba(255,255,255,.75);
+	cursor:pointer;
+	text-decoration: none;
+}
+
+.sidebar {
+    width: 300px;
+    position: fixed;
+    top: 0;
+    right: -300px;
+    height: 100vh;
+    z-index: 999;
+    background: #7386D5;
+    color: #fff;
+    transition: all 0.3s;
+    overflow-y: scroll;
+}
+
+.leaflet-control-container .leaflet-left{
+	transition: all 0.3s;
+}
+
+.sidebar.active {
+	box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-right {
+    right: -300px;
+}
+
+.sidebar-right.active {
+    right: 0;
+}
+
+.sidebar-left {
+    left: -300px;
+}
+
+.sidebar-left.active {
+    left: 0;
+}
+
+.dismiss {
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+}
+
+.dismiss:hover {
+    background: rgba(0,0,0,.1);
+}
+
+.sidebar .sidebar-header {
+    padding: 14px 20px 10px 55px;
+    height: 55px;
+    background: rgba(0,0,0,.1);
+}
+
+#sidebar-content {
+	padding: 20px
+}
+
+#sidebar-content > div {
+    margin-bottom: 10px;
+}
