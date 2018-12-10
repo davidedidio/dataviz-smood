@@ -187,6 +187,7 @@ class Graph {
 var cy;
 var nodes_pos_dict;
 
+
 whenDocumentLoaded(() => {
 	d3.json(URL_FULL + BASE_URL + "/data/nodes_dict.json")
 		.then(function(dict){
@@ -207,6 +208,50 @@ whenDocumentLoaded(() => {
 	    },);
 	});
 
+	$('#paths-check').click(function() {
+		let edges = cy.edges();
 
+		if(this.checked){
+			edges.show()
+		}else{
+			edges.hide()
+		}
+	});
+
+	$('#rest-nodes-check').click(function() {
+		let nodes = cy.filter(function(element, i){
+		  return element.isNode() && element.data('starting_node') == true;
+		});
+
+		if(this.checked){
+			nodes.show()
+		}else{
+			nodes.hide()
+		}
+	});
+
+	$('#inter-nodes-check').click(function() {
+		let nodes = cy.filter(function(element, i){
+		  return element.isNode() && element.data('ending_node') == false && element.data('starting_node') == false;
+		});
+
+		if(this.checked){
+			nodes.show()
+		}else{
+			nodes.hide()
+		}
+	});
+
+	$('#dest-nodes-check').click(function() {
+		let nodes = cy.filter(function(element, i){
+		  return element.isNode() && element.data('ending_node') == true;
+		});
+
+		if(this.checked){
+			nodes.show()
+		}else{
+			nodes.hide()
+		}
+	});
 
 });
