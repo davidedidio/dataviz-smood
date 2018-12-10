@@ -25,7 +25,8 @@ function show_roads(data){
 		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		maxZoom: 30,
 		id: 'mapbox.streets',
-		accessToken: 'pk.eyJ1IjoiZmF0aW5lYiIsImEiOiJjam9tM3ZvcnIwdWc4M3Nwanh6YmkzdHlvIn0.sRywCdS4xkc_JDogD-kAZA'
+		accessToken: 'pk.eyJ1IjoiZmF0aW5lYiIsImEiOiJjam9tM3ZvcnIwdWc4M3Nwanh6YmkzdHlvIn0.sRywCdS4xkc_JDogD-kAZA',
+		detectRetina: true
 	}).addTo(mymap);
 
 
@@ -42,7 +43,7 @@ function show_roads(data){
 		let heat=data[i].heat;
 
 		let heat_index = Math.log(heat)/Math.log(995);
-		let color = d3.interpolateOranges(heat_index);
+		let color = d3.interpolateOrRd(heat_index);
 		//let color='blue';
 		let opacity = 0.5 + 0.5*heat_index;
 
