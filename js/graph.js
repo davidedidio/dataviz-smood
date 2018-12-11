@@ -189,6 +189,7 @@ var nodes_pos_dict;
 
 
 whenDocumentLoaded(() => {
+	$("#nav_graph").addClass("active")
 	d3.json(URL_FULL + BASE_URL + "/data/nodes_dict.json")
 		.then(function(dict){
 		nodes_pos_dict = dict

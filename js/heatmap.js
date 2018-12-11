@@ -56,7 +56,7 @@ class HeatMap {
 	}
 
 	get_line_weight(zoom) {
-		return Math.max(1,this.mymap.getZoom()-11)
+		return Math.max(1,this.mymap.getZoom()- 11)
 	}
 
 	show_roads(ids_to_show){
@@ -148,7 +148,7 @@ class HeatMap {
 }
 
 whenDocumentLoaded(() => {
-
+	$("#nav_map").addClass("active")
 	d3.csv(URL_FULL + BASE_URL + "/data/heatmap_data.csv",
     function(d) {
       return {
