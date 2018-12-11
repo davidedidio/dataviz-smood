@@ -14,9 +14,21 @@ function parse_csv_list(data){
              .map((x) => parseFloat(x))
 }
 
-function on_polyline_click(){
+function on_polyline_click(e){
 	let road_ids = this.options["road_ids"];
 	heatmap.show_roads_with_ids(road_ids)
+	L.DomEvent.stopPropagation(e);
+}
+
+function on_rest_click(e){
+	console.log('clicked on restaurant!')
+	//let road_ids = this.options["road_ids"];
+	//heatmap.show_roads_with_ids(road_ids)
+	L.DomEvent.stopPropagation(e);
+}
+
+function on_map_click(){
+	heatmap.show_roads_with_ids([...Array(2000).keys()]);
 }
 
 class HeatMap {
@@ -58,6 +70,7 @@ class HeatMap {
 		}).setView([46.526, 6.635], 13);
 
 		this.tiles.addTo(mymap);
+		mymap.on("click", on_map_click);
 
 		return mymap
 	}
@@ -78,6 +91,7 @@ class HeatMap {
 		
 		this.lines.forEach((l) => l.remove())
 		this.lines=[];
+		let highlight_lines = [];
 		let intersections = Array(this.data.length-1)
 
 		for (var i=this.data.length-1; i>=0;i--){
@@ -119,11 +133,15 @@ class HeatMap {
 
 			let line= L.polyline(edge,{color: color,renderer: this.mymap.renderer,opacity: opacity,weight:this.get_line_weight(this.mymap.getZoom()), road_ids: ids});
 			line.on("click", on_polyline_click);
-
+			if (heat_index > 0) {
+				highlight_lines.push(line);
+			}
 
 			line.addTo(this.mymap);
 			this.lines.push(line);
 		}
+
+		highlight_lines.map(line => line.bringToFront());
 
 		this.mymap.on('zoomend', () => {
 			let currentZoom = heatmap.mymap.getZoom();
@@ -165,6 +183,8 @@ class HeatMap {
 			plat = this.r_data[i].plat;
 			plng = this.r_data[i].plng;
 			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer});//.addTo(this.mymap);
+			marker.on("click", on_rest_click);
+
 			this.rest_markers_group.addLayer(marker);
 			markers.push(marker)
 
