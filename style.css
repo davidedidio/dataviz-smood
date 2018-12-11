@@ -11,6 +11,8 @@ nav.bg-dark {
 	background-color: #333538;
 }
 
+
+
 .navbar-nav {
 	margin: 0 auto;
 }
@@ -40,6 +42,21 @@ nav a:hover {
 
 .leaflet-control-container .leaflet-left{
 	transition: all 0.3s;
+}
+
+.leaflet-control-container .leaflet-control-zoom.leaflet-bar{
+	border: 2px solid rgba(255,255,255,0.2);
+}
+
+.leaflet-control-container .leaflet-control-zoom a{
+	background-color: #212528;
+    border-bottom: 1px solid #000;
+    color: #5d5c5b;
+}
+.leaflet-control-container .leaflet-control-zoom a:hover {
+	background-color: #151719;
+	border-bottom: 1px solid #000;
+	color: #5d5c5b;
 }
 
 .sidebar.active {
