@@ -16,17 +16,37 @@ function parse_csv_list(data){
 
 function on_polyline_click(){
 	let road_ids = this.options["road_ids"];
-	heatmap.lines.forEach((l) => l.remove())
-	heatmap.show_roads(road_ids)
+	heatmap.show_roads_with_ids(road_ids)
 }
 
 class HeatMap {
 	constructor(data){
 		this.data = data;
+		this.show_rest = true;
+		this.rest_markers_group = null;
+
+		this.tile_url = 'https://api.mapbox.com/styles/v1/mapbox/STYLE-v9/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}'
+		this.style = 'dark';
+		$('body').addClass('map-style-'+this.style)
+
+		this.tiles = L.tileLayer(this.tile_url.replace('STYLE', this.style), {
+			maxZoom: 19,
+			accessToken: 'pk.eyJ1IjoiZmF0aW5lYiIsImEiOiJjam9tM3ZvcnIwdWc4M3Nwanh6YmkzdHlvIn0.sRywCdS4xkc_JDogD-kAZA',
+			retina: '@2x',
+			detectRetina: true
+		});
+
 		this.mymap = this.create_map();
 		this.lines = []
+		this.show_roads_with_ids([...Array(2000).keys()]);
+	}
 
-		this.show_roads([...Array(2000).keys()]);
+	set_map_style(new_style) {
+		this.style = new_style
+		this.tiles.setUrl(this.tile_url.replace('STYLE', this.style))
+		
+		this.show_roads()
+		this.show_restaurants(this.r_data)
 	}
 
 	create_map() {
@@ -37,21 +57,8 @@ class HeatMap {
 			 renderer: myCanvas
 		}).setView([46.526, 6.635], 13);
 
-		L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}@2x?access_token={accessToken}', {
-			// attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-			maxZoom: 19,
-			accessToken: 'pk.eyJ1IjoiZmF0aW5lYiIsImEiOiJjam9tM3ZvcnIwdWc4M3Nwanh6YmkzdHlvIn0.sRywCdS4xkc_JDogD-kAZA',
-			retina: '@2x',
-			detectRetina: true
-		}).addTo(mymap);
+		this.tiles.addTo(mymap);
 
-		// L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-		// 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-		// 	subdomains: 'abcd',
-		// 	maxZoom: 19,
-		// 	retina: '@2x',
-		// 	detectRetina: true
-		// }).addTo(mymap);
 		return mymap
 	}
 
@@ -59,14 +66,22 @@ class HeatMap {
 		return Math.max(1,this.mymap.getZoom()-11)
 	}
 
-	show_roads(ids_to_show){
+
+	show_roads_with_ids(ids_to_show){
+		this.road_ids = ids_to_show
+		this.show_roads()
+	}
+
+	show_roads() {
 		let couples = []
 		let colore=[];
+		
+		this.lines.forEach((l) => l.remove())
 		this.lines=[];
 		let intersections = Array(this.data.length-1)
 
 		for (var i=this.data.length-1; i>=0;i--){
-			intersections[i] = this.data[i].id.filter((i) => ids_to_show.indexOf(i) !== -1).length
+			intersections[i] = this.data[i].id.filter((i) => this.road_ids.indexOf(i) !== -1).length
 		}
 		let max_value = d3.max(intersections)
 
@@ -81,15 +96,24 @@ class HeatMap {
 			let intersect_ids = intersections[i]
 
 			let heat_index = Math.log(intersect_ids+1)/Math.log(max_value+1);
-			let color = d3.interpolateInferno(0.2+0.8*heat_index);
-			//let color = d3.interpolateCool(heat_index);
 
-			let opacity = 0.7 + 0.3*heat_index;
-			if (heat_index == 0){
-				opacity = 0.8;
-				color = "rgb(30,30,30)"
+			let color = null;
+			let opacity = null;
+			if (this.style=='dark') {
+				color = d3.interpolateInferno(0.2+0.8*heat_index);
+				opacity = 0.7 + 0.3*heat_index;
+				if (heat_index == 0){
+					opacity = 0.8;
+					color = "rgb(30,30,30)"
+				}
+			} else if (this.style=='light') {
+				color = d3.interpolateYlOrRd(0.2+0.8*heat_index);
+				opacity = 0.7 + 0.3*heat_index;
+				if (heat_index == 0){
+					opacity = 0.7;
+					color = "rgb(210,210,210)"
+				}
 			}
-			//let opacity = 1;
 
 			let edge = [[lat1, lon1],[lat2, lon2]]
 
@@ -99,19 +123,10 @@ class HeatMap {
 
 			line.addTo(this.mymap);
 			this.lines.push(line);
-
-			// plat = data[i].plat;
-			// plng = data[i].plng;
-			// L.circleMarker([plat,plng],{color:colore,radius:10,renderer:mymap.renderer}).addTo(mymap);
-
-			// dlat = data[i].dlat;
-			// dlng = data[i].dlng;
-			// L.circleMarker([dlat,dlng],{color:colore,radius:10,renderer:mymap.renderer}).addTo(mymap);
 		}
 
 		this.mymap.on('zoomend', () => {
 			let currentZoom = heatmap.mymap.getZoom();
-			console.log(currentZoom, heatmap.get_line_weight(currentZoom))
 			heatmap.lines.map(line => line.setStyle({weight:heatmap.get_line_weight(currentZoom)}));
 		});
 	}
@@ -124,6 +139,11 @@ class HeatMap {
 		this.r_data = restaurant_data
 
 		let markers = [];
+
+		if (this.rest_markers_group != null) {
+			this.mymap.removeLayer(this.rest_markers_group);
+		}
+		this.rest_markers_group = new L.FeatureGroup();
 		for (var i=0; i< this.r_data.length;i++){
 			let plat=this.r_data[i].plat;
 			let plng=this.r_data[i].plng;
@@ -131,13 +151,26 @@ class HeatMap {
 			let dlng=this.r_data[i].dlng;
 
 			let r = this.get_marker_radius(this.mymap.getZoom());
-			let color = 'black';
-			let opacity = 0.9;
+
+			let color = null;
+			let opacity = null;
+			if (this.style=='dark') {
+				color = 'black';
+				opacity = 0.9;
+			} else if (this.style=='light') {
+				color = 'rgb(110,110,110)';
+				opacity = 0.9;
+			}
 
 			plat = this.r_data[i].plat;
 			plng = this.r_data[i].plng;
-			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer}).addTo(this.mymap);
+			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer});//.addTo(this.mymap);
+			this.rest_markers_group.addLayer(marker);
 			markers.push(marker)
+
+			if (this.show_rest){
+				this.mymap.addLayer(this.rest_markers_group);
+			}
 		}
 
 		this.mymap.on('zoomend', () => {
@@ -174,5 +207,28 @@ whenDocumentLoaded(() => {
 
     },);
 
+    $('#map-style-dark').click(function() {
+		$('body').removeClass('map-style-light')
+		$('body').addClass('map-style-dark')
+
+		heatmap.set_map_style('dark')
+	});
+
+	$('#map-style-light').click(function() {
+		$('body').removeClass('map-style-dark')
+		$('body').addClass('map-style-light')
+
+		heatmap.set_map_style('light')
+	});
+
+	$('#rest-markers-check').click(function() {
+		if(this.checked){
+			heatmap.show_rest = true;
+			heatmap.mymap.addLayer(heatmap.rest_markers_group)
+		}else{
+			heatmap.show_rest = false;
+			heatmap.mymap.removeLayer(heatmap.rest_markers_group)
+		}
+	});
 
 });

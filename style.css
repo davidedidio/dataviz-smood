@@ -44,19 +44,24 @@ nav a:hover {
 	transition: all 0.3s;
 }
 
-.leaflet-control-container .leaflet-control-zoom.leaflet-bar{
+.map-style-dark .leaflet-control-container .leaflet-control-zoom.leaflet-bar{
 	border: 2px solid rgba(255,255,255,0.2);
 }
 
-.leaflet-control-container .leaflet-control-zoom a{
+.map-style-dark .leaflet-control-container .leaflet-control-zoom a{
 	background-color: #212528;
     border-bottom: 1px solid #000;
     color: #5d5c5b;
 }
-.leaflet-control-container .leaflet-control-zoom a:hover {
+.map-style-dark .leaflet-control-container .leaflet-control-zoom a:hover {
 	background-color: #151719;
 	border-bottom: 1px solid #000;
 	color: #5d5c5b;
+}
+
+.map-style-dark .leaflet-control-container .leaflet-control-zoom a.leaflet-disabled {
+    background-color: #212528;
+    color: #5d5c5b;
 }
 
 .sidebar.active {
