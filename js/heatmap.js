@@ -16,18 +16,22 @@ function parse_csv_list(data){
 
 function on_polyline_click(e){
 	let road_ids = this.options["road_ids"];
+
 	heatmap.show_roads_with_ids(road_ids)
+	heatmap.show_restaurants(heatmap.r_data);
 	L.DomEvent.stopPropagation(e);
 }
 
 function on_rest_click(e){
-	console.log('clicked on restaurant!')
-	//let road_ids = this.options["road_ids"];
-	//heatmap.show_roads_with_ids(road_ids)
+	let road_ids = this.options["road_ids"];
+
+	heatmap.show_roads_with_ids(road_ids);
+	heatmap.show_restaurants(heatmap.r_data);
 	L.DomEvent.stopPropagation(e);
 }
 
 function on_map_click(){
+	// Reset selected paths and show everything
 	heatmap.show_roads_with_ids([...Array(2000).keys()]);
 }
 
@@ -167,6 +171,7 @@ class HeatMap {
 			let plng=this.r_data[i].plng;
 			let dlat=this.r_data[i].dlat;
 			let dlng=this.r_data[i].dlng;
+			let ids=this.r_data[i].road_ids;
 
 			let r = this.get_marker_radius(this.mymap.getZoom());
 
@@ -182,7 +187,7 @@ class HeatMap {
 
 			plat = this.r_data[i].plat;
 			plng = this.r_data[i].plng;
-			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer});//.addTo(this.mymap);
+			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer, road_ids: ids});//.addTo(this.mymap);
 			marker.on("click", on_rest_click);
 
 			this.rest_markers_group.addLayer(marker);
@@ -215,11 +220,12 @@ whenDocumentLoaded(() => {
     }).then(function(data) {
 			heatmap = new HeatMap(data)
 
-			d3.csv(URL_FULL + BASE_URL + "/data/unique_pickups.csv",
+			d3.csv(URL_FULL + BASE_URL + "/data/restaurants.csv",
 		    function(d) {
 		      return {
 		          plat : d.plat,
-		          plng : d.plang,
+		          plng : d.plng,
+		          road_ids: parse_csv_list(d.paths_ids)
 		        };
 		    }).then(function(data) {
 			  	heatmap.show_restaurants(data);
