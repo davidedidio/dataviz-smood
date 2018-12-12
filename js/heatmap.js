@@ -56,6 +56,7 @@ class HeatMap {
 		});
 
 		this.mymap = this.create_map();
+		this.layer = L.canvas({ padding: 0.4 });
 		this.lines = []
 		this.show_roads_with_ids([...Array(2000).keys()]);
 	}
@@ -63,7 +64,7 @@ class HeatMap {
 	set_map_style(new_style) {
 		this.style = new_style;
 		this.tiles.setUrl(this.tile_url.replace('STYLE', this.style));
-		
+
 		this.show_roads();
 		this.show_restaurants(this.r_data, this.selected_rests);
 	}
@@ -92,8 +93,10 @@ class HeatMap {
 		this.show_roads()
 	}
 
-	show_roads() {		
-		this.lines.forEach((l) => l.remove())
+	show_roads() {
+		this.old_layer = this.layer
+		this.layer = L.canvas({ padding: 0.5, opacity: 0 });
+		this.old_lines = this.lines;
 		this.lines=[];
 		let highlight_lines = [];
 
@@ -107,7 +110,7 @@ class HeatMap {
 			for (var i=this.data.length-1; i>=0;i--){
 				heat[i] = this.data[i].id.filter((i) => this.road_ids.indexOf(i) !== -1).length
 			}
-		} 
+		}
 		let max_value = d3.max(heat)
 
 		for (var i=this.data.length-1; i>=0;i--){
@@ -142,7 +145,7 @@ class HeatMap {
 
 			let edge = [[lat1, lon1],[lat2, lon2]]
 
-			let line= L.polyline(edge,{color: color,renderer: this.mymap.renderer,opacity: opacity,weight:this.get_line_weight(this.mymap.getZoom()), road_ids: ids});
+			let line= L.polyline(edge,{color: color,renderer: this.layer,opacity: opacity,weight:this.get_line_weight(this.mymap.getZoom()), road_ids: ids});
 			line.on("click", on_polyline_click);
 			if (heat_index > 0) {
 				highlight_lines.push(line);
@@ -158,6 +161,18 @@ class HeatMap {
 			let currentZoom = heatmap.mymap.getZoom();
 			heatmap.lines.map(line => line.setStyle({weight:heatmap.get_line_weight(currentZoom)}));
 		});
+
+		this.layer._container.style.opacity = 0.5;
+
+		if(this.old_layer._container != undefined){
+			$(this.old_layer._container).animate({ opacity: 0 }, 1000, () => {
+				this.old_lines.forEach((l) => l.remove())
+				this.old_layer.remove();
+			});
+		}
+
+		$(this.layer._container).animate({ opacity: 1 }, 1000, () => {});
+
 	}
 
 	get_marker_radius(zoom) {
@@ -252,6 +267,17 @@ whenDocumentLoaded(() => {
 
     },);
 
+		d3.csv(URL_FULL + BASE_URL + "/data/time_data.csv",
+			function(d) {
+				return {
+						time : d.time,
+						ids : parse_csv_list(d.indices)
+					};
+			}).then(function(data) {
+				clock = new Clock(data)
+				clock.setCaptions("all");
+			},);
+
     $('#map-style-dark').click(function() {
 		$('body').removeClass('map-style-light')
 		$('body').addClass('map-style-dark')
@@ -275,5 +301,7 @@ whenDocumentLoaded(() => {
 			heatmap.mymap.removeLayer(heatmap.rest_markers_group)
 		}
 	});
+
+
 
 });
