@@ -1,5 +1,5 @@
 #mapid {
-  height: 100vh;
+  height: calc(100vh - 56px);
   width: 100vw;
 }
 
@@ -10,8 +10,6 @@ nav.bg-dark {
 #cy {
 	background-color: #333538;
 }
-
-
 
 .navbar-nav {
 	margin: 0 auto;
@@ -25,6 +23,14 @@ nav a:hover {
 	color: rgba(255,255,255,.75);
 	cursor:pointer;
 	text-decoration: none;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    transition: all 0.2s;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    font-weight: 600;
 }
 
 .sidebar {
@@ -51,12 +57,12 @@ nav a:hover {
 .map-style-dark .leaflet-control-container .leaflet-control-zoom a{
 	background-color: #212528;
     border-bottom: 1px solid #000;
-    color: #5d5c5b;
+    color: hsl(0, 0%, 50%);
 }
 .map-style-dark .leaflet-control-container .leaflet-control-zoom a:hover {
 	background-color: #151719;
 	border-bottom: 1px solid #000;
-	color: #5d5c5b;
+	color: hsl(0, 0%, 50%);
 }
 
 .map-style-dark .leaflet-control-container .leaflet-control-zoom a.leaflet-disabled {

@@ -16,23 +16,25 @@ function parse_csv_list(data){
 
 function on_polyline_click(e){
 	let road_ids = this.options["road_ids"];
-	console.log(road_ids);
+	//console.log(road_ids);
 	heatmap.show_roads_with_ids(road_ids)
-	heatmap.show_restaurants(heatmap.r_data);
+	heatmap.show_restaurants(heatmap.r_data, []);
 	L.DomEvent.stopPropagation(e);
 }
 
 function on_rest_click(e){
 	let road_ids = this.options["road_ids"];
-	console.log(road_ids);
+	let rest_id = this.options["rest_id"];
+	//console.log(road_ids);
 	heatmap.show_roads_with_ids(road_ids);
-	heatmap.show_restaurants(heatmap.r_data);
+	heatmap.show_restaurants(heatmap.r_data, [rest_id]);
 	L.DomEvent.stopPropagation(e);
 }
 
 function on_map_click(){
 	// Reset selected paths and show everything
 	heatmap.show_roads_with_ids([...Array(2000).keys()]);
+	heatmap.show_restaurants(heatmap.r_data, []);
 }
 
 class HeatMap {
@@ -46,6 +48,7 @@ class HeatMap {
 		$('body').addClass('map-style-'+this.style)
 
 		this.tiles = L.tileLayer(this.tile_url.replace('STYLE', this.style), {
+			edgeBufferTiles: 2,
 			maxZoom: 19,
 			accessToken: 'pk.eyJ1IjoiZmF0aW5lYiIsImEiOiJjam9tM3ZvcnIwdWc4M3Nwanh6YmkzdHlvIn0.sRywCdS4xkc_JDogD-kAZA',
 			retina: '@2x',
@@ -58,15 +61,15 @@ class HeatMap {
 	}
 
 	set_map_style(new_style) {
-		this.style = new_style
-		this.tiles.setUrl(this.tile_url.replace('STYLE', this.style))
+		this.style = new_style;
+		this.tiles.setUrl(this.tile_url.replace('STYLE', this.style));
 		
-		this.show_roads()
-		this.show_restaurants(this.r_data)
+		this.show_roads();
+		this.show_restaurants(this.r_data, this.selected_rests);
 	}
 
 	create_map() {
-		let myCanvas = L.canvas();
+		let myCanvas = L.canvas({ padding: 0.4 });
 
 		let mymap = L.map('mapid',{
 			 trackResize: false,
@@ -89,19 +92,23 @@ class HeatMap {
 		this.show_roads()
 	}
 
-	show_roads() {
-		let couples = []
-		let colore=[];
-		
+	show_roads() {		
 		this.lines.forEach((l) => l.remove())
 		this.lines=[];
 		let highlight_lines = [];
-		let intersections = Array(this.data.length-1)
 
-		for (var i=this.data.length-1; i>=0;i--){
-			intersections[i] = this.data[i].id.filter((i) => this.road_ids.indexOf(i) !== -1).length
-		}
-		let max_value = d3.max(intersections)
+		let heat = null;
+		if (this.road_ids.length >= 2000){ // 2000 is the total number of paths
+			// all paths are shown, we can use heat value from data
+			heat = this.data.map(d => d.heat);
+		} else {
+			// we have to recompute heat for selected paths only
+			heat = Array(this.data.length-1)
+			for (var i=this.data.length-1; i>=0;i--){
+				heat[i] = this.data[i].id.filter((i) => this.road_ids.indexOf(i) !== -1).length
+			}
+		} 
+		let max_value = d3.max(heat)
 
 		for (var i=this.data.length-1; i>=0;i--){
 			let lat1=this.data[i].lat1;
@@ -111,7 +118,7 @@ class HeatMap {
 			//let heat=data[i].heat;
 			let ids = this.data[i].id;
 
-			let intersect_ids = intersections[i]
+			let intersect_ids = heat[i]
 
 			let heat_index = Math.log(intersect_ids+1)/Math.log(max_value+1);
 
@@ -157,8 +164,9 @@ class HeatMap {
 		return Math.max(1, this.mymap.getZoom()-11)
 	}
 
-	show_restaurants(restaurant_data) {
+	show_restaurants(restaurant_data, selected_rests) {
 		this.r_data = restaurant_data
+		this.selected_rests = selected_rests
 
 		let markers = [];
 
@@ -177,17 +185,28 @@ class HeatMap {
 
 			let color = null;
 			let opacity = null;
+			let is_selected =  (this.selected_rests.indexOf(i) >= 0)
 			if (this.style=='dark') {
-				color = 'black';
-				opacity = 0.9;
+				if (is_selected){
+					color = 'white';
+					opacity = 1.0;
+				} else {
+					color = 'black';
+					opacity = 0.9;
+				}
 			} else if (this.style=='light') {
-				color = 'rgb(110,110,110)';
-				opacity = 0.9;
+				if (is_selected){
+					color = 'black';
+					opacity = 1.0;
+				} else {
+					color = 'rgb(110,110,110)';
+					opacity = 0.9;
+				}
 			}
 
 			plat = this.r_data[i].plat;
 			plng = this.r_data[i].plng;
-			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer, road_ids: ids});//.addTo(this.mymap);
+			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer, road_ids: ids, rest_id: i});//.addTo(this.mymap);
 			marker.on("click", on_rest_click);
 
 			this.rest_markers_group.addLayer(marker);
@@ -228,7 +247,7 @@ whenDocumentLoaded(() => {
 		          road_ids: parse_csv_list(d.paths_ids)
 		        };
 		    }).then(function(data) {
-			  	heatmap.show_restaurants(data);
+			  	heatmap.show_restaurants(data, []);
 		    },);
 
     },);
