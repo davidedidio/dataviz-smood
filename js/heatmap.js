@@ -95,7 +95,7 @@ class HeatMap {
 
 	show_roads() {
 		this.old_layer = this.layer
-		this.layer = L.canvas({ padding: 0.5, opacity: 0 });
+		this.layer = L.canvas({ padding: 0.5});
 		this.old_lines = this.lines;
 		this.lines=[];
 		let highlight_lines = [];
@@ -162,15 +162,13 @@ class HeatMap {
 			heatmap.lines.map(line => line.setStyle({weight:heatmap.get_line_weight(currentZoom)}));
 		});
 
-		this.layer._container.style.opacity = 0.5;
-
+		this.layer._container.style.opacity = 0;
 		if(this.old_layer._container != undefined){
 			$(this.old_layer._container).animate({ opacity: 0 }, 1000, () => {
 				this.old_lines.forEach((l) => l.remove())
 				this.old_layer.remove();
 			});
 		}
-
 		$(this.layer._container).animate({ opacity: 1 }, 1000, () => {});
 
 	}
