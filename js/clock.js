@@ -6,72 +6,61 @@ class Clock{
 
   constructor(data){
     this.data = data
+    this.play_symbol = "►"
+    this.pause_symbol = "▌▌"
+    this.is_playing = false;
+    this.index = 0;
     $('button#start_button').click(() => {
-      this.index = 0;
-      this.intervalLoop();
-      this.interval = setInterval(() => {
-          this.intervalLoop();
-      }, 2000);
+      if (this.is_playing == true){
+        this.stop_animation();
+        this.is_playing = false;
+      }else{
+        this.is_playing = true;
+        $('#start_button').text(this.pause_symbol);
+
+        this.index = 0;
+        this.intervalLoop();
+        this.interval = setInterval(() => {
+            this.intervalLoop();
+        }, 2000);
+      }
   	});
 
-    TweenMax.staggerFrom(".clockArc", .5, {
-      drawSVG: 0,
-      ease: Power3.easeOut
-    }, 0.3);
-    TweenMax.from("#time", 1.0, {
-      attr: {
-        y: 150
-      },
-      opacity: 0,
-      ease: Power3.easeOut,
-      delay: 0.5
+    this.slider = new rSlider({
+      target: '#time_range',
+      values: this.data.map((x) => x["time"]),
+      range: true,
+      tooltip: false,
+      scale: true,
+      labels: true,
+      onChange: function (vals) {
+        let ids = [];
+        let times = data.map((x) => x.time);
+        let v = vals.split(",")
+        let sliced_data = data.slice(times.indexOf(v[0]), 1+times.indexOf(v[1]))
+        sliced_data.forEach((x) => ids.push(...x.ids))
+        heatmap.show_roads_with_ids(ids)
+      }
     });
+
   }
 
   intervalLoop(){
     this.setCaptions(this.data[this.index].time)
-    heatmap.show_roads_with_ids(this.data[this.index].ids)
 
     this.index++;
     if(this.index > this.data.length-1){
-      clearInterval(this.interval);
+      this.stop_animation();
     }
   }
 
-  polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-    var angleInRadians;
-    angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-    return {
-      x: centerX + radius * Math.cos(angleInRadians),
-      y: centerY + radius * Math.sin(angleInRadians)
-    };
-  };
-
-  describeArc(x, y, radius, startAngle, endAngle) {
-    var arcSweep, end, start;
-    start = this.polarToCartesian(x, y, radius, endAngle);
-    end = this.polarToCartesian(x, y, radius, startAngle);
-    arcSweep = endAngle - startAngle <= 180 ? '0' : '1';
-    return ['M', start.x, start.y, 'A', radius, radius, 0, arcSweep, 0, end.x, end.y].join(' ');
-  };
+  stop_animation(){
+    $('#start_button').text(this.play_symbol);
+    clearInterval(this.interval);
+  }
 
   setCaptions(time) {
-    if(time == "all"){
-      $('#time').text("No Time");
-    }else{
-      let STime = time.split(":");
-      let hour = parseInt(STime[0]);
-      let min = parseInt(STime[1]);
-      let hourArc = ((hour * 60 + min) % (12 * 60))/ (12 * 60) * 360;
-      $('.clockArc.hour').attr('d', this.describeArc(150, 150, 80, 0, hourArc));
-      $('.clockDot.hour').attr('d', this.describeArc(150, 150, 80, hourArc - 3, hourArc));
-      let dot = $(".clockDot.hour");
-      let pos = this.polarToCartesian(150, 150, 80, hourArc);
-      dot.attr("cx", pos.x);
-      dot.attr("cy", pos.y);
-      $('#time').text(time);
-    }
-
+    this.slider.setValues(time, time)
   };
 
 }
