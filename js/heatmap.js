@@ -106,7 +106,7 @@ class HeatMap {
 		let heat = null;
 		if (this.road_ids.length >= 2000){ // 2000 is the total number of paths
 			// all paths are shown, we can use heat value from data
-			heat = this.data.map(d => d.heat);
+			heat = this.data.map(d => parseFloat(d.heat));
 		} else {
 			// we have to recompute heat for selected paths only
 			heat = Array(this.data.length-1)

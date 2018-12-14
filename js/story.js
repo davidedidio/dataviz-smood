@@ -48,7 +48,6 @@ class Story{
   }
 
   next_popup(){
-    console.log(this.popup_idx, this.nb_popups)
     if (this.popup_idx < this.nb_popups){
       // display the next popup
       let latlng = this.popups[this.popup_idx].latlng;

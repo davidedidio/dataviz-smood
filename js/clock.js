@@ -6,28 +6,26 @@ class Clock{
 
   constructor(data){
     this.data = data
-    this.play_symbol = "►"
-    this.pause_symbol = "▌▌"
     this.is_playing = false;
     this.index = 0;
-    $('button#start_button').click(() => {
+    $('button#start-button').click(() => {
       if (this.is_playing == true){
         this.stop_animation();
         this.is_playing = false;
       }else{
         this.is_playing = true;
-        $('#start_button').text(this.pause_symbol);
+        $('#start-button svg').attr('data-icon', 'pause')
 
         this.index = 0;
         this.intervalLoop();
         this.interval = setInterval(() => {
             this.intervalLoop();
-        }, 2000);
+        }, 1500);
       }
   	});
 
     this.slider = new rSlider({
-      target: '#time_range',
+      target: '#time-range',
       values: this.data.map((x) => x["time"]),
       range: true,
       tooltip: false,
@@ -55,7 +53,7 @@ class Clock{
   }
 
   stop_animation(){
-    $('#start_button').text(this.play_symbol);
+    $('#start-button svg').attr('data-icon', 'play')
     clearInterval(this.interval);
   }
 
