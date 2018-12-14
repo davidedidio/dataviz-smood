@@ -1,38 +1,4 @@
-<button id="start_button" type="button" class="btn btn-dark">Start</button>
-<svg id="clock">
-	<defs>
-		<pattern id="dotPattern"
-						 x="0" y="0" width="10" height="10"
-						 patternUnits="userSpaceOnUse">
-				<circle class="bgDot" cx="5" cy="5" r="2" />
-		</pattern>
-
-		<radialGradient id="backHoleBelowClock" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-			<stop offset="50%"  style="stop-color:rgb(0,0,0);stop-opacity:0.7"/>
-			<stop offset="100%"	style="stop-color:rgb(0,0,0);stop-opacity:0"/>
-		</radialGradient>
-
-		<radialGradient id="blackVignette" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-      <stop offset="40%" style="stop-color:rgb(0,0,0);stop-opacity:0" />
-      <stop offset="100%" style="stop-color:rgb(0,0,0);stop-opacity:1" />
-    </radialGradient>
-
-		<filter id="glow">
-				<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-				<feMerge>
-						<feMergeNode in="coloredBlur"/>
-						<feMergeNode in="SourceGraphic"/>
-				</feMerge>
-		</filter>
-
-	</defs>
-
-	<!-- Clock objects -->
-	<circle class="clockCircle hour" cx="150" cy="150" r="80" stroke-width="6" />
-	<path id="arcHour" class="clockArc hour" stroke-width="6" stroke-linecap="round" filter="url(#glow)" />
-	<circle class="clockDot hour" r="8" filter="url(#glow)" />
-
-	<!-- Caption objects -->
-	<text id="time" class="timeText noselect" x="150" y="150" stroke-width="1" text-anchor="middle" alignment-baseline="middle"></text>
-
-</svg>
+<button id="start_button" type="button" class="btn btn-dark">&#9658;</button>
+<div id="div_slider" >
+	<input type="text" id="time_range" class="slider" />
+</div>

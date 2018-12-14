@@ -114,19 +114,16 @@ class HeatMap {
 				heat[i] = this.data[i].id.filter((i) => this.road_ids.indexOf(i) !== -1).length
 			}
 		}
-		let max_value = d3.max(heat)
+		let max_value = 995//d3.max(heat)
 
 		for (var i=this.data.length-1; i>=0;i--){
 			let lat1=this.data[i].lat1;
 			let lon1=this.data[i].lon1;
 			let lat2=this.data[i].lat2;
 			let lon2=this.data[i].lon2;
-			//let heat=data[i].heat;
 			let ids = this.data[i].id;
 
-			let intersect_ids = heat[i]
-
-			let heat_index = Math.log(intersect_ids+1)/Math.log(max_value+1);
+			let heat_index = Math.log(heat[i]+1)/Math.log(max_value+1);
 
 			let color = null;
 			let opacity = null;
@@ -166,12 +163,14 @@ class HeatMap {
 		});
 
 		this.layer._container.style.opacity = 0;
+
 		if(this.old_layer._container != undefined){
 			$(this.old_layer._container).animate({ opacity: 0 }, 1000, () => {
 				this.old_lines.forEach((l) => l.remove())
 				this.old_layer.remove();
 			});
 		}
+
 		$(this.layer._container).animate({ opacity: 1 }, 1000, () => {});
 
 	}
