@@ -31,10 +31,13 @@ function on_rest_click(e){
 	L.DomEvent.stopPropagation(e);
 }
 
-function on_map_click(){
+function on_map_click(e){
 	// Reset selected paths and show everything
 	heatmap.show_roads_with_ids([...Array(2000).keys()]);
 	heatmap.show_restaurants(heatmap.r_data, []);
+
+	// story.show_popup(e.latlng, "Lorem ipsum dolor sit amet, alii altera cotidieque vim in, eu pri summo semper dissentias. Sed ad tritani hendrerit, ei quod omnis veritus duo.")
+	// console.log(e.latlng.lat, e.latlng.lng)
 }
 
 class HeatMap {
@@ -251,6 +254,7 @@ whenDocumentLoaded(() => {
         };
     }).then(function(data) {
 			heatmap = new HeatMap(data)
+			story = new Story();
 
 			d3.csv(URL_FULL + BASE_URL + "/data/restaurants.csv",
 		    function(d) {

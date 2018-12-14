@@ -1,7 +1,66 @@
+.btn {
+	font-weight: 500;
+}
+
+.btn svg.icon-right{
+	margin-left: 5px;
+}
+
+.btn svg.icon-left{
+	margin-right: 5px;
+}
+
+.btn-primary{
+	background: linear-gradient(#a32d5d, #d24e37);
+	border: none;
+	box-shadow: 0 1px 5px rgba(0,0,0,.1);
+	color: rgba(0,0,0,.8);
+}
+
+.map-style-light .btn-primary {
+	color: rgba(255,255,255,.9);
+}
+
+.map-style-light .btn-primary:hover {
+	color: rgba(255,255,255,1);
+	box-shadow: 0 1px 5px rgba(210, 78, 55, 0.5);
+}
+
+.btn-primary:hover, .btn-primary:not(:disabled):not(.disabled):active{
+	color: rgba(0,0,0,.96);
+	box-shadow: 0 1px 5px rgba(121, 18, 0, 0.8);
+}
+
+.btn-primary.focus, .btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,0,0,.2);
+}
+
+.btn-link{
+	color: rgba(255,255,255,.7);
+}
+
+.btn-link:hover{
+	color: rgba(255,255,255,.85);
+	text-decoration: none;
+}
+
+.map-style-light .btn-link{
+	color: rgba(0,0,0,.7);
+}
+
+.map-style-light .btn-link:hover{
+	color: rgba(0,0,0,.85);
+}
+
 #mapid {
   height: calc(100vh - 56px);
   width: 100vw;
   background-color: rgb(52,51,50);
+}
+
+.leaflet-container{
+	font: inherit!important;
+	font-size: 13px!important;
 }
 
 nav.bg-dark {
@@ -286,3 +345,44 @@ nav a:hover {
 .map-style-light .modal-backdrop.show {
     opacity: .3;
 }
+
+/****POP-UP****/
+
+.custom-popup .leaflet-popup-content {
+	margin: 14px 16px;
+}
+
+.custom-popup .leaflet-popup-content-wrapper, .custom-popup .leaflet-popup-tip {
+	color: rgba(255,255,255,.7);
+    background-color: #212529;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,.1);
+}
+
+.map-style-light .custom-popup .leaflet-popup-content-wrapper, .map-style-light .custom-popup .leaflet-popup-tip {
+	color: rgba(0,0,0,.7);
+    background-color: #fff;
+}
+
+.custom-popup a:hover {
+	color: rgba(255,255,255,.85)!important;
+}
+
+.custom-popup h6{
+	display: inline-block;
+	margin-top: 5px;
+}
+
+.custom-popup .btn {
+	float: right;
+	font-size: 13px;
+	border: none;
+}
+
+.custom-popup span.story-state{
+	margin-top: 5px;
+	margin-left: 3px;
+	color: rgba(255,255,255,.5);
+}
+
