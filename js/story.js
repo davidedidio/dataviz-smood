@@ -39,7 +39,11 @@ class Story{
       'closeButton': false
     };
 
-    this.start_story();
+    $('#start-tutorial').click(() => {
+      this.start_story();
+      $('#start-tutorial').css('display', 'none');
+    });
+    
   }
 
   start_story(){

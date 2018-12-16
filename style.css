@@ -29,6 +29,8 @@
 .btn-primary:hover, .btn-primary:not(:disabled):not(.disabled):active{
 	color: rgba(0,0,0,.96);
 	box-shadow: 0 1px 5px rgba(121, 18, 0, 0.8);
+	background: linear-gradient(#a32d5d, #d24e37);
+	border: none;
 }
 
 .btn-primary.focus, .btn-primary:focus {
@@ -42,6 +44,10 @@
 .btn-link:hover{
 	color: rgba(255,255,255,.85);
 	text-decoration: none;
+}
+
+.leaflet-container .leaflet-control-attribution a {
+    color: rgb(100,100,100);
 }
 
 .map-style-light .btn-link{
@@ -386,4 +392,48 @@ nav a:hover {
 	margin-left: 3px;
 	color: rgba(255,255,255,.5);
 }
+
+/****TOP MESSAGE****/
+#top-message-container{
+	position: absolute;
+	top: 66px;
+	z-index: 990;
+	width: 100%;
+	height: 48px;
+	pointer-events: none;
+}
+
+.top-message {
+	margin: 8px auto;
+    left: 100px;
+    padding: 4px 16px;
+    width: fit-content;
+    min-height: 32px;
+    border-radius: 30px;
+    font-size: 14px;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+    pointer-events: all;
+}
+
+.top-message svg{
+	font-size: 10px;
+	position: relative;
+	color: #a32d5d;
+	margin-right: 8px;
+}
+
+#start-tutorial:hover {
+	background-color: #1c1f21!important;
+	color: rgba(255,255,255,.85)!important;
+	cursor: pointer;
+}
+
+.map-style-light #start-tutorial:hover {
+	background-color: #fff!important;
+	color: rgba(0,0,0,.85)!important;
+}
+
+
 
