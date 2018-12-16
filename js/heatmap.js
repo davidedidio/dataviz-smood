@@ -17,24 +17,31 @@ function parse_csv_list(data){
 function on_polyline_click(e){
 	let road_ids = this.options["road_ids"];
 	//console.log(road_ids);
-	heatmap.show_roads_with_ids(road_ids)
-	heatmap.show_restaurants(heatmap.r_data, []);
+	heatmap.set_road_ids(road_ids);
+	heatmap.set_selected_restaurants([]);
+	heatmap.update_map();
 	L.DomEvent.stopPropagation(e);
 }
 
 function on_rest_click(e){
 	let road_ids = this.options["road_ids"];
 	let rest_id = this.options["rest_id"];
-	//console.log(road_ids);
-	heatmap.show_roads_with_ids(road_ids);
-	heatmap.show_restaurants(heatmap.r_data, [rest_id]);
+
+	heatmap.set_road_ids(road_ids);
+	heatmap.set_selected_restaurants([rest_id]);
+	heatmap.update_map();
 	L.DomEvent.stopPropagation(e);
 }
 
 function on_map_click(){
 	// Reset selected paths and show everything
-	heatmap.show_roads_with_ids([...Array(2000).keys()]);
-	heatmap.show_restaurants(heatmap.r_data, []);
+	heatmap.set_road_ids([...Array(2000).keys()]);
+	heatmap.set_selected_restaurants([]);
+	heatmap.update_map();
+}
+
+function intersect_arrays(array1, array2){
+	return array1.filter((i) => array2.indexOf(i) !== -1);
 }
 
 class HeatMap {
@@ -57,16 +64,17 @@ class HeatMap {
 
 		this.mymap = this.create_map();
 		this.layer = L.canvas({ padding: 0.4 });
-		this.lines = []
-		this.show_roads_with_ids([...Array(2000).keys()]);
+		this.lines = [];
+		this.set_road_ids([...Array(2000).keys()]);
+		this.set_time_ids([...Array(2000).keys()]);
+		this.set_selected_restaurants([]);
 	}
 
 	set_map_style(new_style) {
 		this.style = new_style;
 		this.tiles.setUrl(this.tile_url.replace('STYLE', this.style));
 
-		this.show_roads();
-		this.show_restaurants(this.r_data, this.selected_rests);
+		this.update_map();
 	}
 
 	create_map() {
@@ -87,28 +95,20 @@ class HeatMap {
 		return Math.max(1,this.mymap.getZoom()- 11)
 	}
 
-
-	show_roads_with_ids(ids_to_show){
-		this.road_ids = ids_to_show
-		this.show_roads()
-	}
-
 	show_roads() {
-		this.old_layer = this.layer
-		this.layer = L.canvas({ padding: 0.5});
-		this.old_lines = this.lines;
-		this.lines=[];
 		let highlight_lines = [];
 
 		let heat = null;
-		if (this.road_ids.length >= 2000){ // 2000 is the total number of paths
+		let filter_array = intersect_arrays(this.road_ids, this.time_ids);
+
+		if (filter_array.length >= 2000){ // 2000 is the total number of paths
 			// all paths are shown, we can use heat value from data
 			heat = this.data.map(d => d.heat);
 		} else {
 			// we have to recompute heat for selected paths only
 			heat = Array(this.data.length-1)
 			for (var i=this.data.length-1; i>=0;i--){
-				heat[i] = this.data[i].id.filter((i) => this.road_ids.indexOf(i) !== -1).length
+				heat[i] = intersect_arrays(this.data[i].id, filter_array).length
 			}
 		}
 		let max_value = 995//d3.max(heat)
@@ -158,33 +158,55 @@ class HeatMap {
 			let currentZoom = heatmap.mymap.getZoom();
 			heatmap.lines.map(line => line.setStyle({weight:heatmap.get_line_weight(currentZoom)}));
 		});
+	}
+
+	set_road_ids(road_ids){
+		this.road_ids = road_ids;
+	}
+
+	set_selected_restaurants(selected_rests){
+		this.selected_rests = selected_rests;
+	}
+
+	set_time_ids(time_ids){
+		this.time_ids = time_ids;
+	}
+
+	update_map(){
+		this.old_layer = this.layer
+		this.layer = L.canvas({ padding: 0.5});
+		this.old_lines = this.lines;
+		this.lines=[];
+
+		this.show_roads()
+		this.show_restaurants()
 
 		this.layer._container.style.opacity = 0;
-
-		if(this.old_layer._container != undefined){
-			$(this.old_layer._container).animate({ opacity: 0 }, 1000, () => {
-				this.old_lines.forEach((l) => l.remove())
-				this.old_layer.remove();
+		// This assignement is required for smooth animation (We need a closure in the animate function)
+		let old_line = this.old_lines;
+		let old_layer = this.old_layer;
+		let old_rest_markers_group = this.old_rest_markers_group;
+		if(this.old_layer != undefined){
+			$(this.old_layer._container).animate({ opacity: 0 }, 2000, () => {
+				old_line.forEach((l) => l.remove())
+				old_layer.remove();
+				this.mymap.removeLayer(old_rest_markers_group);
 			});
 		}
 
-		$(this.layer._container).animate({ opacity: 1 }, 1000, () => {});
-
+		$(this.layer._container).animate({ opacity: 1 }, 2000, () => {});
 	}
 
 	get_marker_radius(zoom) {
 		return Math.max(1, this.mymap.getZoom()-11)
 	}
 
-	show_restaurants(restaurant_data, selected_rests) {
-		this.r_data = restaurant_data
-		this.selected_rests = selected_rests
-
+	show_restaurants() {
 		let markers = [];
-
 		if (this.rest_markers_group != null) {
-			this.mymap.removeLayer(this.rest_markers_group);
+			this.old_rest_markers_group = this.rest_markers_group;
 		}
+
 		this.rest_markers_group = new L.FeatureGroup();
 		for (var i=0; i< this.r_data.length;i++){
 			let plat=this.r_data[i].plat;
@@ -218,7 +240,7 @@ class HeatMap {
 
 			plat = this.r_data[i].plat;
 			plng = this.r_data[i].plng;
-			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.mymap.renderer, road_ids: ids, rest_id: i});//.addTo(this.mymap);
+			let marker = L.circleMarker([plat,plng],{color:color,opacity:opacity,radius:r,renderer:this.layer, road_ids: ids, rest_id: i});//.addTo(this.mymap);
 			marker.on("click", on_rest_click);
 
 			this.rest_markers_group.addLayer(marker);
@@ -259,7 +281,8 @@ whenDocumentLoaded(() => {
 		          road_ids: parse_csv_list(d.paths_ids)
 		        };
 		    }).then(function(data) {
-			  	heatmap.show_restaurants(data, []);
+					heatmap.r_data = data
+			  	heatmap.update_map();
 		    },);
 
     },);

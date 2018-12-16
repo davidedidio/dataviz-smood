@@ -1,3 +1,7 @@
+.playing_animation{
+	transition: all 1.9s linear !important;
+}
+
 .rs-container *{
 	box-sizing:border-box;
 	-webkit-touch-callout:none;
@@ -121,6 +125,8 @@
 	border-color:#ccc;
 	color:#999
 }
+
+
 div#div_slider {
 	position: fixed;
 	width: 75vw;
