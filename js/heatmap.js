@@ -33,7 +33,7 @@ function on_rest_click(e){
 	L.DomEvent.stopPropagation(e);
 }
 
-function on_map_click(){
+function on_map_click(e){
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
 	heatmap.set_selected_restaurants([]);
@@ -103,7 +103,7 @@ class HeatMap {
 
 		if (filter_array.length >= 2000){ // 2000 is the total number of paths
 			// all paths are shown, we can use heat value from data
-			heat = this.data.map(d => d.heat);
+			heat = this.data.map(d => parseFloat(d.heat));
 		} else {
 			// we have to recompute heat for selected paths only
 			heat = Array(this.data.length-1)
@@ -272,6 +272,7 @@ whenDocumentLoaded(() => {
         };
     }).then(function(data) {
 			heatmap = new HeatMap(data)
+			story = new Story();
 
 			d3.csv(URL_FULL + BASE_URL + "/data/restaurants.csv",
 		    function(d) {
