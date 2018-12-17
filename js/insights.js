@@ -11,16 +11,17 @@ function show_histogram(data){
   let times_ = new Array()
   data.map(function(i){
     times_.push(parseInt(i.time.substring(0,2),10))
+
+	})
   build_histogram(times_);
-})
-    console.log(times_)
-  }
+
+	}
 
   function build_histogram(times){
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 30, left: 40},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+ 		var margin = {top: 10, right: 30, bottom: 30, left: 40};
+    let width = 300 - margin.left - margin.right;
+    let height = 200 - margin.top - margin.bottom;
 
 
     // set the ranges
@@ -30,10 +31,12 @@ function show_histogram(data){
 
 
     // set the parameters for the histogram
-    var histogram = d3.histogram()(times);
-
+    var histogram = d3.histogram()
+    .value(function(d) { return d; })
+    .domain(x.domain())
+    .thresholds(x.ticks(24))(times);
       //  .bins(x.ticks(24))
-
+			console.log(histogram);
 
     var yMax = d3.max(histogram, function(d){return d.length});
     var yMin = d3.min(histogram, function(d){return d.length});
@@ -44,13 +47,33 @@ function show_histogram(data){
 
     var xAxis = d3.axisBottom(x);
 
-    var svg = d3.select("#insights-sidebar").append("svg")
+//    console.log(width + margin.left + margin.right)
+    var svg = d3.select("#hist").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
                   .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var bar = svg.selectAll(".bar")
+		svg.selectAll("rect")
+					.data(histogram).enter().append("rect")
+						.attr("class","bar")
+						.attr("fill","white")
+						.attr("x",1)
+						.attr("transform", function(d) {
+		  return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+      .attr("width", width/24)//(x(times[0].dx) - x(0)) - 1)
+      .attr("height", function(d) { return height - y(d.length); });
+
+			// add the x Axis
+svg.append("g")
+		.attr("transform", "translate(0," + height + ")")
+		.call(d3.axisBottom(x));
+
+		// add the y Axis
+  svg.append("g")
+      .call(d3.axisLeft(y));
+
+  /**var bar = svg.selectAll(".bar")
                         .data(data)
                       .enter().append("g")
                         .attr("class", "bar")
@@ -64,14 +87,15 @@ function show_histogram(data){
 
     bar.append("rect")
         .attr("x", 1)
-        .attr("width", (x(values[0].dx) - x(0)) - 1)
+        .attr("width", (x(times[0].dx) - x(0)) - 1)
         .attr("height", function(d) { return height - y(d.y); })
         .attr("fill", function(d) { return colorScale(d.y) });
 
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .call(xAxis);*/
+
     }
 
 
@@ -84,6 +108,8 @@ function parse_csv_list(data){
 
 whenDocumentLoaded(() => {
 
+	document.getElementById("hist").style.color = "white";
+	console.log("data");
   data = 0;
 
   d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
