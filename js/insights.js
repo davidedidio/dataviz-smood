@@ -38,7 +38,6 @@ function show_histogram(data){
 				distances.set(hour,parseInt(i.distance,10));
 			}
 		})
-	console.log(distances);
 
 	build_histogram(distances);
 	}
@@ -55,10 +54,7 @@ function show_histogram(data){
 	              .range([0,width]);
 
 	    // set the parameters for the histogram
-	 /*   var histogram = d3.histogram()
-	    .value(function(d,i) { return i; })
-	    .domain(x.domain())
-	    .thresholds(x.ticks(24))(dict);*/
+
 			let histogram = dict;
 
 
@@ -70,13 +66,7 @@ function show_histogram(data){
 				if (value<yMin){yMin = value};
 			}
 
-			/*d3.max(histogram, function(d,i){
-				console.log(d);
-				console.log(i);
-				return i});
-	    var yMin = d3.min(histogram, function(d){return histogram.get(d)});
-*/
-			console.log(yMax);
+
 
 	    var y = d3.scaleLinear()
 	            .domain([0, yMax])
@@ -91,22 +81,21 @@ function show_histogram(data){
 	                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 			dict.forEach(function(value,key){
-				console.log(value);
 				svg.append("rect")
 								.attr("class","bar")
 								.attr("fill","white")
 								.attr("x",1)
 								.attr("transform",
 								"translate(" + x(key) + "," + y(value) + ")")
-		      .attr("width", width/24)//(x(times[0].dx) - x(0)) - 1)
+		      .attr("width", width/24)
 		      .attr("height",height - y(value));
 			});
-				// add the x Axis
-	svg.append("g")
-			.attr("transform", "translate(0," + height + ")")
-			.call(d3.axisBottom(x));
+		// add the x Axis
+		svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
 
-			// add the y Axis
+		// add the y Axis
 	  svg.append("g")
 	      .call(d3.axisLeft(y));
 
@@ -130,8 +119,6 @@ function show_histogram(data){
     .value(function(d) { return d; })
     .domain(x.domain())
     .thresholds(x.ticks(24))(times);
-      //  .bins(x.ticks(24))
-			console.log(histogram);
 
     var yMax = d3.max(histogram, function(d){return d.length});
     var yMin = d3.min(histogram, function(d){return d.length});
@@ -142,7 +129,6 @@ function show_histogram(data){
 
     var xAxis = d3.axisBottom(x);
 
-//    console.log(width + margin.left + margin.right)
     var svg = d3.select("#hist").append("svg")
                     .attr("width", width + margin.left + margin.right)
                     .attr("height", height + margin.top + margin.bottom)
@@ -160,37 +146,13 @@ function show_histogram(data){
       .attr("height", function(d) { return height - y(d.length); });
 
 			// add the x Axis
-svg.append("g")
-		.attr("transform", "translate(0," + height + ")")
-		.call(d3.axisBottom(x));
+		svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
 
-		// add the y Axis
-  svg.append("g")
-      .call(d3.axisLeft(y));
-
-  /**var bar = svg.selectAll(".bar")
-                        .data(data)
-                      .enter().append("g")
-                        .attr("class", "bar")
-                        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-
-    let color = "blue"
-
-    var colorScale = d3.scaleLinear()
-      .domain([yMin, yMax])
-      .range([d3.rgb(color).brighter(), d3.rgb(color).darker()]);
-
-    bar.append("rect")
-        .attr("x", 1)
-        .attr("width", (x(times[0].dx) - x(0)) - 1)
-        .attr("height", function(d) { return height - y(d.y); })
-        .attr("fill", function(d) { return colorScale(d.y) });
-
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);*/
-
+			// add the y Axis
+	  svg.append("g")
+	      .call(d3.axisLeft(y));
     }
 
 
