@@ -15,8 +15,9 @@ function parse_csv_list(data){
 }
 
 function on_polyline_click(e){
+	story.close_start_button();
 	let road_ids = this.options["road_ids"];
-	//console.log(road_ids);
+	console.log(road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([]);
 	heatmap.update_map();
@@ -24,9 +25,11 @@ function on_polyline_click(e){
 }
 
 function on_rest_click(e){
+	story.close_start_button();
 	let road_ids = this.options["road_ids"];
 	let rest_id = this.options["rest_id"];
-
+	console.log(e.latlng.lat, e.latlng.lng);
+	console.log([rest_id], road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([rest_id]);
 	heatmap.update_map();
@@ -34,6 +37,8 @@ function on_rest_click(e){
 }
 
 function on_map_click(e){
+	story.close_start_button();
+	console.log(e.latlng.lat, e.latlng.lng);
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
 	heatmap.set_selected_restaurants([]);
@@ -189,14 +194,14 @@ class HeatMap {
 		let old_layer = this.old_layer;
 		let old_rest_markers_group = this.old_rest_markers_group;
 		if(this.old_layer != undefined){
-			$(this.old_layer._container).animate({ opacity: 0 }, 2000, () => {
+			$(this.old_layer._container).animate({ opacity: 0 }, 1000, () => {
 				old_line.forEach((l) => l.remove())
 				old_layer.remove();
 				this.mymap.removeLayer(old_rest_markers_group);
 			});
 		}
 
-		$(this.layer._container).animate({ opacity: 1 }, 2000, () => {});
+		$(this.layer._container).animate({ opacity: 1 }, 1000, () => {});
 	}
 
 	get_marker_radius(zoom) {

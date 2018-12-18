@@ -163,6 +163,9 @@
 	-webkit-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s;
+    display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 #insights-sidebar.active + #slider-container {
@@ -172,8 +175,7 @@
 
 #slider-container #slider-wrapper{
 	margin: 0 auto;
-	width: 800px;
-	width: fit-content;
+	display: inline-block;
 	padding: 8px 13px;
 }
 
