@@ -262,14 +262,13 @@ class HeatMap {
 	        let time_at = time[0]==time[1];
 	        time_selected = (time_from || time_until);
 
-	        time_msg = (time_at)? 'at'+time[0]: (time_from&&time_until)? 'between': (time_from)? 'from': 'until';
 	        if (time_at){
 	        	time_msg = 'at '+time[0];
 	        }else if (time_from && time_until){
 	        	time_msg = 'between '+time[0]+'-'+time[1];
 	        }else if (time_from){
 	        	time_msg = 'from '+time[0];
-	        }else{
+	        }else if (time_until){
 	        	time_msg = 'until '+time[1];
 	        }
 	        time_msg = ' '+time_msg;
@@ -279,7 +278,7 @@ class HeatMap {
 			$('#navbar-msg').text('Showing all deliveries');
 		} 
 		else if (road_selected && !rest_selected) {
-			$('#navbar-msg').text('Showing deliveries through one road'+time_msg);
+			$('#navbar-msg').text('Showing deliveries through one point'+time_msg);
 		}
 		else if (!road_selected && !rest_selected) {
 			$('#navbar-msg').text('Showing deliveries'+time_msg);
