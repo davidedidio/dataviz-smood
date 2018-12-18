@@ -7,66 +7,198 @@ function whenDocumentLoaded(action) {
 	}
 }
 
-function get_distance(plat, plng, dlat, dlng){
-
-}
-
 function get_time(string){
 	return parseInt(string.substring(0,2),10);
 }
-function show_histogram(data){
-  let times_ = new Array()
-  data.map(function(i){
-    times_.push(get_time(i.time));
 
-	})
-  build_histogram_deliveries(times_);
+function get_max_min_values(dict){
+	mini = dict.values().next().value;
+	maxi = dict.values().next().value;
 
-	let distances;
-	try{
-		distances = new Map();
-	}catch(e){
-		distances = Map();
+	for(value of dict.values()){
+		if(value>maxi){maxi = value;}
+		if (value<mini){mini = value};
+	}
+	return [mini,maxi]
+}
+
+
+function get_max_min_keys(dict){
+	mini = dict.keys().next().value;
+	maxi = dict.keys().next().value;
+
+	for(value of dict.keys()){
+		if(value>maxi){maxi = value;}
+		if (value<mini){mini = value};
+	}
+	return [mini,maxi]
+}
+
+class Insights{
+	constructor(data){
+		this.data = data;
+		this.show_histograms(this.data);
 	}
 
-	data.map(function(i){
-			let hour = get_time(i.time);
-			if (distances.has(hour)){
-				distances.set(hour, distances.get(hour) + parseInt(i.distance,10));
-			}
-			else{
-				distances.set(hour,parseInt(i.distance,10));
-			}
-		})
-
-	build_histogram(distances);
+	update(ids){
+		let new_data = this.data.filter((d,i)=>ids.includes(i));
+		this.show_histograms(new_data);
 	}
 
-	function build_histogram(dict){
+	show_histograms(data){
+		console.log(data);
+		d3.selectAll(".histograms").remove();
+		let times
+		try{
+			times = new Map();
+		}catch(e){
+			times = Map();
+		}
+
+		let distances;
+		try{
+			distances = new Map();
+		}catch(e){
+			distances = Map();
+		}
+
+		let distanceMax = Math.max.apply(Math, this.data.map(function(o) { return o.distance; }))/1000;
+		let distanceMin = Math.min.apply(Math, this.data.map(function(o) { return o.distance; }))/1000;
+		let step = Math.floor((distanceMax-distanceMin)/12);
+		let rangeDist = Array(Math.floor(distanceMax/step+1)).fill().map((x,i)=>i*step);
+
+		let durations;
+		try{
+			durations = new Map();
+		}catch(e){
+			durations = Map();
+		}
+
+		let durationMax = Math.max.apply(Math, this.data.map(function(o) { return o.duration; }))/60;
+		let durationMin = Math.min.apply(Math, this.data.map(function(o) { return o.duration; }))/60;
+		let stepDur = Math.floor((durationMax-durationMin)/12);
+		let rangeDur = Array(Math.floor(durationMax/step+1)).fill().map((x,i)=>i*step);
+
+
+		data.map(function(i){
+				let hour = get_time(i.time);
+				//get the distance in kilometers
+				let dist = parseInt(i.distance,10)/1000;
+				let duration = parseInt(i.duration,10)/60;
+
+				if (times.has(hour)){
+						times.set(hour, times.get(hour) + 1);
+				}
+				else{
+						times.set(hour,1);
+					}
+
+				rangeDist.map(function(j){
+					if(dist>=j && dist<j+step){
+						if (distances.has(j)){
+							distances.set(j, distances.get(j) + 1);
+						}
+						else{
+							distances.set(j,1);
+						}
+					}
+				});
+
+				rangeDur.map(function(j){
+					if(duration>=j && duration<j+stepDur){
+						if (durations.has(j)){
+							durations.set(j, durations.get(j) + 1);
+						}
+						else{
+							durations.set(j,1);
+						}
+					}
+				});
+
+
+
+			});
+		this.build_histogram(times,"#hist");
+		this.build_histogram(distances,"#distances");
+		this.build_histogram(durations, "#durations");
+
+	}
+
+		build_histogram(dict,id){
+		    // set the dimensions and margins of the graph
+		 		let margin = {top: 10, right: 30, bottom: 30, left: 60};
+		    let width = 300 - margin.left - margin.right;
+		    let height = 200 - margin.top - margin.bottom;
+
+				let [yMin,yMax] = get_max_min_values(dict);
+				let [xMin,xMax] = get_max_min_keys(dict);
+
+		    // set the ranges
+		    var x = d3.scaleLinear()
+		              .domain([xMin, xMax])
+		              .range([0,width-width/(xMax+1-xMin)]);
+
+		    // set the parameters for the histogram
+
+				let histogram = dict;
+
+		    var y = d3.scaleLinear()
+		            .domain([0, yMax])
+		            .range([height, 0]);
+
+		    var xAxis = d3.axisBottom(d3.scaleLinear()
+		              .domain([xMin, xMax])
+		              .range([0,width]));
+
+		    var svg = d3.select(id).append("svg")
+											.attr("class","histograms")
+		                    .attr("width", width + margin.left + margin.right)
+		                    .attr("height", height + margin.top + margin.bottom)
+		                  .append("g")
+		                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+				dict.forEach(function(value,key){
+					svg.append("rect")
+									.attr("class","bar")
+									.attr("fill","white")
+									.attr("x",1)
+									.attr("transform",
+									"translate(" + x(key)+ "," + y(value) + ")")
+			      .attr("width", width/(xMax+1-xMin))
+			      .attr("height",height - y(value));
+				});
+			// add the x Axis
+			svg.append("g")
+					.attr("transform", "translate(0," + height + ")")
+					.call(xAxis);
+
+			// add the y Axis
+		  svg.append("g")
+		      .call(d3.axisLeft(y));
+
+		}
+
+	 /* function build_histogram_deliveries(times){
 	    // set the dimensions and margins of the graph
-	 		let margin = {top: 10, right: 30, bottom: 30, left: 60};
+	 		var margin = {top: 10, right: 30, bottom: 30, left: 40};
 	    let width = 300 - margin.left - margin.right;
 	    let height = 200 - margin.top - margin.bottom;
+
 
 	    // set the ranges
 	    var x = d3.scaleLinear()
 	              .domain([0, 24])
 	              .range([0,width]);
 
+
 	    // set the parameters for the histogram
+	    var histogram = d3.histogram()
+	    .value(function(d) { return d; })
+	    .domain(x.domain())
+	    .thresholds(x.ticks(24))(times);
 
-			let histogram = dict;
-
-
-	    let yMax = 0;
-			let yMin=dict.get(10);
-
-			for(value of dict.values()){
-				if(value>yMax){yMax = value;}
-				if (value<yMin){yMin = value};
-			}
-
-
+	    var yMax = d3.max(histogram, function(d){return d.length});
+	    var yMin = d3.min(histogram, function(d){return d.length});
 
 	    var y = d3.scaleLinear()
 	            .domain([0, yMax])
@@ -74,86 +206,32 @@ function show_histogram(data){
 
 	    var xAxis = d3.axisBottom(x);
 
-	    var svg = d3.select("#distances").append("svg")
+	    var svg = d3.select("#hist").append("svg")
 	                    .attr("width", width + margin.left + margin.right)
 	                    .attr("height", height + margin.top + margin.bottom)
 	                  .append("g")
 	                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-			dict.forEach(function(value,key){
-				svg.append("rect")
-								.attr("class","bar")
-								.attr("fill","white")
-								.attr("x",1)
-								.attr("transform",
-								"translate(" + x(key) + "," + y(value) + ")")
-		      .attr("width", width/24)
-		      .attr("height",height - y(value));
-			});
-		// add the x Axis
-		svg.append("g")
-				.attr("transform", "translate(0," + height + ")")
-				.call(d3.axisBottom(x));
+			svg.selectAll("rect")
+						.data(histogram).enter().append("rect")
+							.attr("class","bar")
+							.attr("fill","white")
+							.attr("x",1)
+							.attr("transform", function(d) {
+			  return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
+	      .attr("width", width/24)//(x(times[0].dx) - x(0)) - 1)
+	      .attr("height", function(d) { return height - y(d.length); });
 
-		// add the y Axis
-	  svg.append("g")
-	      .call(d3.axisLeft(y));
+				// add the x Axis
+			svg.append("g")
+					.attr("transform", "translate(0," + height + ")")
+					.call(d3.axisBottom(x));
 
-	}
-
-  function build_histogram_deliveries(times){
-    // set the dimensions and margins of the graph
- 		var margin = {top: 10, right: 30, bottom: 30, left: 40};
-    let width = 300 - margin.left - margin.right;
-    let height = 200 - margin.top - margin.bottom;
-
-
-    // set the ranges
-    var x = d3.scaleLinear()
-              .domain([0, 24])
-              .range([0,width]);
-
-
-    // set the parameters for the histogram
-    var histogram = d3.histogram()
-    .value(function(d) { return d; })
-    .domain(x.domain())
-    .thresholds(x.ticks(24))(times);
-
-    var yMax = d3.max(histogram, function(d){return d.length});
-    var yMin = d3.min(histogram, function(d){return d.length});
-
-    var y = d3.scaleLinear()
-            .domain([0, yMax])
-            .range([height, 0]);
-
-    var xAxis = d3.axisBottom(x);
-
-    var svg = d3.select("#hist").append("svg")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
-                  .append("g")
-                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-		svg.selectAll("rect")
-					.data(histogram).enter().append("rect")
-						.attr("class","bar")
-						.attr("fill","white")
-						.attr("x",1)
-						.attr("transform", function(d) {
-		  return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-      .attr("width", width/24)//(x(times[0].dx) - x(0)) - 1)
-      .attr("height", function(d) { return height - y(d.length); });
-
-			// add the x Axis
-		svg.append("g")
-				.attr("transform", "translate(0," + height + ")")
-				.call(d3.axisBottom(x));
-
-			// add the y Axis
-	  svg.append("g")
-	      .call(d3.axisLeft(y));
-    }
+				// add the y Axis
+		  svg.append("g")
+		      .call(d3.axisLeft(y));
+	    }*/
+		}
 
 
 function parse_csv_list(data){
@@ -166,25 +244,54 @@ function parse_csv_list(data){
 whenDocumentLoaded(() => {
 
 	document.getElementById("hist").style.color = "white";
-  data = 0;
 
   d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
     function(d) {
       return {
-          plat : d.plat,
-          plng : d.plng,
-          dlat : d.dlat,
-          dlng : d.dlng,
           time : d.t,
 					distance : d.distance,
-          //road : d.road,
-          road_lat : parse_csv_list(d.road_latitudes),
-          road_lng : parse_csv_list(d.road_longitudes)
+					duration : d.duration,
         };
     }).then(function(data) {
-      this.data = data
-	  show_histogram(data);
+			insights = new Insights(data);
 
+			d3.csv(URL_FULL + BASE_URL + "/data/heatmap_data.csv",
+				function(d) {
+					return {
+							lat1 : d.lat1,
+							lon1 : d.lon1,
+							lat2 : d.lat2,
+							lon2 : d.lon2,
+							heat : d.heat,
+							id	 : parse_csv_list(d.id)
+						};
+				}).then(function(data) {
+					heatmap = new HeatMap(data)
+					story = new Story();
+
+					d3.csv(URL_FULL + BASE_URL + "/data/restaurants.csv",
+						function(d) {
+							return {
+									plat : d.plat,
+									plng : d.plng,
+									road_ids: parse_csv_list(d.paths_ids)
+								};
+						}).then(function(data) {
+							heatmap.r_data = data
+							heatmap.update_map();
+						},);
+						d3.csv(URL_FULL + BASE_URL + "/data/time_data.csv",
+							function(d) {
+								return {
+										time : d.time,
+										ids : parse_csv_list(d.indices)
+									};
+							}).then(function(data) {
+								clock = new Clock(data)
+								clock.setCaptions("all");
+							},);
+
+				},);
     },);
 
 });
