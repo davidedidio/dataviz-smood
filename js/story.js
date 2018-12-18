@@ -39,7 +39,8 @@ class Story{
       'closeButton': false
     };
 
-    $('#start-tutorial').click(() => {
+    $('.start-tutorial').click(() => {
+      $('#about-modal').modal('hide');
       this.start_story();
       $('#start-tutorial').css('display', 'none');
     });
@@ -90,6 +91,13 @@ class Story{
       .openOn(heatmap.mymap);
 
     eval(action);
+  }
+
+  close_start_button(){
+    // $('#start-tutorial').css('display', 'none');
+    $('#start-tutorial').animate({ opacity: '0' }, 800, () => {
+        $('#start-tutorial').css('display', 'none');
+    });
   }
 
 }
