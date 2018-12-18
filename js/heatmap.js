@@ -194,14 +194,14 @@ class HeatMap {
 		let old_layer = this.old_layer;
 		let old_rest_markers_group = this.old_rest_markers_group;
 		if(this.old_layer != undefined){
-			$(this.old_layer._container).animate({ opacity: 0 }, 1000, () => {
+			$(this.old_layer._container).animate({ opacity: 0 }, 800, () => {
 				old_line.forEach((l) => l.remove())
 				old_layer.remove();
 				this.mymap.removeLayer(old_rest_markers_group);
 			});
 		}
 
-		$(this.layer._container).animate({ opacity: 1 }, 1000, () => {});
+		$(this.layer._container).animate({ opacity: 1 }, 800, () => {});
 	}
 
 	get_marker_radius(zoom) {

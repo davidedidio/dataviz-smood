@@ -48,6 +48,16 @@ class Insights{
 	show_histograms(data){
 		console.log(data);
 		d3.selectAll(".histograms").remove();
+
+		let x1 = document.getElementById("title1");
+		x1.style.display = "none";
+
+		let x2 = document.getElementById("title2");
+		x2.style.display = "none";
+		let x3 = document.getElementById("title3");
+		x3.style.display = "none";
+
+
 		let times
 		try{
 			times = new Map();
@@ -118,13 +128,13 @@ class Insights{
 
 
 			});
-		this.build_histogram(times,"#hist");
-		this.build_histogram(distances,"#distances");
-		this.build_histogram(durations, "#durations");
+		this.build_histogram(times, "#hist", "Hours", "Number of trips", "title1");
+		this.build_histogram(distances,"#distances", "Distance in kms", "Number of trips", "title2");
+		this.build_histogram(durations, "#durations", "Duration in minutes", "Number of trips", "title3");
 
 	}
 
-		build_histogram(dict,id){
+		build_histogram(dict, id, xLabel, yLabel, title){
 		    // set the dimensions and margins of the graph
 		 		let margin = {top: 10, right: 30, bottom: 30, left: 60};
 		    let width = 300 - margin.left - margin.right;
@@ -132,50 +142,75 @@ class Insights{
 
 				let [yMin,yMax] = get_max_min_values(dict);
 				let [xMin,xMax] = get_max_min_keys(dict);
+				if(xMin!=xMax){
 
-		    // set the ranges
-		    var x = d3.scaleLinear()
-		              .domain([xMin, xMax])
-		              .range([0,width-width/(xMax+1-xMin)]);
 
-		    // set the parameters for the histogram
+			    // set the ranges
+			    var x = d3.scaleLinear()
+			              .domain([xMin, xMax])
+			              .range([0,width-width/(xMax+1-xMin)]);
 
-				let histogram = dict;
+			    // set the parameters for the histogram
 
-		    var y = d3.scaleLinear()
-		            .domain([0, yMax])
-		            .range([height, 0]);
+					let histogram = dict;
 
-		    var xAxis = d3.axisBottom(d3.scaleLinear()
-		              .domain([xMin, xMax])
-		              .range([0,width]));
+			    var y = d3.scaleLinear()
+			            .domain([0, yMax])
+			            .range([height, 0]);
 
-		    var svg = d3.select(id).append("svg")
-											.attr("class","histograms")
-		                    .attr("width", width + margin.left + margin.right)
-		                    .attr("height", height + margin.top + margin.bottom)
-		                  .append("g")
-		                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			    var xAxis = d3.axisBottom(d3.scaleLinear()
+			              .domain([xMin, xMax])
+			              .range([0,width]));
 
-				dict.forEach(function(value,key){
-					svg.append("rect")
-									.attr("class","bar")
-									.attr("fill","white")
-									.attr("x",1)
-									.attr("transform",
-									"translate(" + x(key)+ "," + y(value) + ")")
-			      .attr("width", width/(xMax+1-xMin))
-			      .attr("height",height - y(value));
-				});
-			// add the x Axis
-			svg.append("g")
-					.attr("transform", "translate(0," + height + ")")
-					.call(xAxis);
+			    var svg = d3.select(id).append("svg")
+												.attr("class","histograms")
+			                    .attr("width", width + margin.left + margin.right)
+			                    .attr("height", height + margin.top + margin.bottom)
+			                  .append("g")
+			                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-			// add the y Axis
-		  svg.append("g")
-		      .call(d3.axisLeft(y));
+					dict.forEach(function(value,key){
+						svg.append("rect")
+										.attr("class","bar")
+										.attr("fill","white")
+										.attr("stroke","gray")
+										.attr("x",1)
+										.attr("transform",
+										"translate(" + x(key)+ "," + y(value) + ")")
+				      .attr("width", width/(xMax+1-xMin))
+				      .attr("height",height - y(value));
+					});
+				// add the x Axis
+				svg.append("g")
+						.attr("transform", "translate(0," + height + ")")
+						.call(xAxis);
 
+				svg.append("text")
+		       .attr("transform",
+		             "translate(" + (width/2) + " ," +
+		                            (height + margin.top + 20) + ")")
+		       .style("text-anchor", "middle")
+					 .style("fill", "white")
+		       .text(xLabel);
+
+
+				// add the y Axis
+			  svg.append("g")
+			      .call(d3.axisLeft(y));
+
+				// text label for the y axis
+			   svg.append("text")
+			       .attr("transform", "rotate(-90)")
+			       .attr("y", 0 - margin.left)
+			       .attr("x",0 - (height / 2))
+			       .attr("dy", "1em")
+			       .style("text-anchor", "middle")
+						 .style("fill", "white")
+			       .text(yLabel);
+
+				 let titleDiv = document.getElementById(title);
+				  titleDiv.style.display = "block";
+			 }
 		}
 
 	 /* function build_histogram_deliveries(times){
