@@ -77,7 +77,8 @@ class Story{
       'maxWidth': 300,
       'minWidth': 250,
       'closeButton': false,
-      'autoPanPadding': L.point(60,60),
+      'autoPanPaddingTopLeft': L.point(310,60),
+      'autoPanPaddingBottomRight': L.point(60,60),
       'closeOnClick': false
     };
 

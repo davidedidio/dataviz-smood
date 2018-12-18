@@ -17,7 +17,7 @@ function parse_csv_list(data){
 function on_polyline_click(e){
 	story.close_start_button();
 	let road_ids = this.options["road_ids"];
-	console.log(road_ids);
+	// console.log(road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([]);
 	heatmap.update_map();
@@ -28,8 +28,7 @@ function on_rest_click(e){
 	story.close_start_button();
 	let road_ids = this.options["road_ids"];
 	let rest_id = this.options["rest_id"];
-	console.log(e.latlng.lat, e.latlng.lng);
-	console.log([rest_id], road_ids);
+	// console.log([rest_id], road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([rest_id]);
 	heatmap.update_map();
@@ -38,7 +37,7 @@ function on_rest_click(e){
 
 function on_map_click(e){
 	story.close_start_button();
-	console.log(e.latlng.lat, e.latlng.lng);
+	// console.log(e.latlng.lat, e.latlng.lng);
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
 	heatmap.set_selected_restaurants([]);
@@ -94,6 +93,15 @@ class HeatMap {
 		mymap.on("click", on_map_click);
 
 		return mymap
+	}
+
+	reset(){
+		this.set_road_ids([...Array(2000).keys()]);
+		this.set_time_ids([...Array(2000).keys()]);
+		this.set_selected_restaurants([]);
+		this.update_map();
+
+		$('#navbar-msg').text('Showing all deliveries')
 	}
 
 	get_line_weight(zoom) {
@@ -177,7 +185,50 @@ class HeatMap {
 		this.time_ids = time_ids;
 	}
 
+	update_navbar_msg(){
+		let road_selected = (this.road_ids.length<2000);
+		let rest_selected = (this.selected_rests.length>0);
+
+		let time_selected = false
+		let time = null
+		let time_msg = ''
+		if (window.clock!=undefined) {
+			let vals = clock.slider.getValue();
+	        time = vals.split(",");
+	        let time_from = time[0]!="10:30";
+	        let time_until = time[1]!="21:30";
+	        let time_at = time[0]==time[1];
+	        time_selected = (time_from || time_until);
+
+	        time_msg = (time_at)? 'at'+time[0]: (time_from&&time_until)? 'between': (time_from)? 'from': 'until';
+	        if (time_at){
+	        	time_msg = 'at '+time[0];
+	        }else if (time_from && time_until){
+	        	time_msg = 'between '+time[0]+'-'+time[1];
+	        }else if (time_from){
+	        	time_msg = 'from '+time[0];
+	        }else{
+	        	time_msg = 'until '+time[1];
+	        }
+	        time_msg = ' '+time_msg;
+		}
+		
+		if (!road_selected && !time_selected && !rest_selected) {
+			$('#navbar-msg').text('Showing all deliveries');
+		} 
+		else if (road_selected && !rest_selected) {
+			$('#navbar-msg').text('Showing deliveries through one road'+time_msg);
+		}
+		else if (!road_selected && !rest_selected) {
+			$('#navbar-msg').text('Showing deliveries'+time_msg);
+		}
+		else if (road_selected && rest_selected) {
+			$('#navbar-msg').text('Showing deliveries from one restaurant'+time_msg);
+		}
+	}
+
 	update_map(){
+		this.update_navbar_msg();
 		this.old_layer = this.layer
 		this.layer = L.canvas({ padding: 0.5});
 		this.old_lines = this.lines;
@@ -268,9 +319,6 @@ class HeatMap {
 whenDocumentLoaded(() => {
 	$("#nav_map").addClass("active")
 
-
-
-
     $('#map-style-dark').click(function() {
 		$('body').removeClass('map-style-light')
 		$('body').addClass('map-style-dark')
@@ -295,6 +343,9 @@ whenDocumentLoaded(() => {
 		}
 	});
 
+	$('#navbar-reset').click(function() {
+		heatmap.reset()
+	});
 
 
 });

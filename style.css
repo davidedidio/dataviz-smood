@@ -100,8 +100,18 @@ nav a:hover {
     transition: all 0.2s;
 }
 
-.navbar-dark .navbar-nav .nav-link.active {
-    font-weight: 600;
+#navbar-msg {
+    font-weight: 500;
+    color: white;
+}
+
+#navbar-reset {
+    margin-right: -41px;
+    margin-left: -5px;
+}
+
+.navbar-dark .navbar-nav #navbar-msg:hover {
+    cursor: auto;
 }
 
 .sidebar {
