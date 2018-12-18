@@ -9,27 +9,27 @@
 	var BASE_URL = "{{ site.baseurl }}";
 	var URL_FULL = "{{ site.url }}";
 
-	function setup_sidebar(sidebar_id, open_button_id, optional_elem=null){
-		$(document).ready(function () {
-	        $(sidebar_id).mCustomScrollbar({
-	            theme: "minimal"
-	        });
+	let sidebar_id = '#insights-sidebar';
+	let open_button_id = '#open-insights-sidebar';
+	let leaflet_control = '.leaflet-control-container .leaflet-left'
 
-	        $(sidebar_id+' .dismiss').on('click', function () {
-	            // hide sidebar
-	            $(sidebar_id).removeClass('active');
-	            if (optional_elem!=null) {$(optional_elem).css('left','0')}
-	        });
+	$(document).ready(function () {
+        $(sidebar_id).mCustomScrollbar({
+            theme: "minimal"
+        });
 
-	        $(open_button_id).on('click', function () {
-	            // open sidebar
-	            $(sidebar_id).addClass('active');
-	            if (optional_elem!=null) {$(optional_elem).css('left','300px')}
-	        });
-	    });
-	}
+        $(sidebar_id+' .dismiss').on('click', function () {
+            // hide sidebar
+            $(sidebar_id).removeClass('active');
+            if (leaflet_control!=null) {$(leaflet_control).css('left','0')}
+        });
 
-	setup_sidebar('#insights-sidebar', '#open-insights-sidebar', '.leaflet-control-container .leaflet-left')
+        $(open_button_id).on('click', function () {
+            // open sidebar
+            $(sidebar_id).addClass('active');
+            if (leaflet_control!=null) {$(leaflet_control).css('left','300px')}
+        });
+    });
 
 </script>
 

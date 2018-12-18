@@ -43,12 +43,12 @@ class Story{
       },{
         text:"You can either select a specific time range, or show an animation of the deliveries along the day with the time bar below.",
         latlng: L.latLng(46.49342900178936, 6.636600494384766),
-        action: "heatmap.set_road_ids([...Array(2000).keys()]);heatmap.update_map();"
+        action: "heatmap.set_selected_restaurants([]);heatmap.set_road_ids([...Array(2000).keys()]);heatmap.update_map();"
       },{
         text:"For any selection, further insights are shown in the sidebar on the left.",
-        latlng: L.latLng(46.54540254050101, 6.635227203369141),
+        latlng: L.latLng(46.54268697331455, 6.589221954345704),
         action: "null",
-        class: "popup-notip"
+        class: "popup-tip-left"
       },{
         text:"That’s it, now you can explore the data by yourself!",
         latlng: L.latLng(46.54540254050101, 6.635227203369141),
