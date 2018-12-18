@@ -15,38 +15,40 @@ title: Colorful Traces
 
 {% include clock.html %}
 
-<div class="card map-panel" id='options-card'>
-    <header class="card-header">
-        <a href="#" data-toggle="collapse" data-target="#collapse-options" aria-expanded="true" class='collapsed'>
-            <i class="icon-action fa fa-sort-down"></i>
-            <span class="title">Options</span>
-        </a>
-    </header>
-    <div class="collapse" id="collapse-options" style="">
-        <article class="card-body">
-            <div class="form-check">
-                <input id="rest-markers-check" class="form-check-input" type="checkbox" value="" checked>
-                <label class="form-check-label" for="rest-markers-check">
-                    Show restaurants
-                </label>
-            </div>
-            <div>
-                <label class="btn-toggle-label" for="map-style-toggle">
-                    Map style
-                </label>
-                <div id="map-style-toggle" class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label id="map-style-dark" class="btn btn-secondary btn-sm active">
-                        <input type="radio" name="options" autocomplete="off" checked> Dark
-                    </label>
-                    <label id="map-style-light" class="btn btn-secondary btn-sm">
-                        <input type="radio" name="options" autocomplete="off"> Light
-                    </label>
-                </div>
-            </div>
-        </article>
-    </div>
+<div id='right-panel'>
+  <div class="card map-panel" id='options-card'>
+      <header class="card-header">
+          <a href="#" data-toggle="collapse" data-target="#collapse-options" aria-expanded="true" class='collapsed'>
+              <i class="icon-action fa fa-sort-down"></i>
+              <span class="title">Options</span>
+          </a>
+      </header>
+      <div class="collapse" id="collapse-options" style="">
+          <article class="card-body">
+              <div class="form-check">
+                  <input id="rest-markers-check" class="form-check-input" type="checkbox" value="" checked>
+                  <label class="form-check-label" for="rest-markers-check">
+                      Show restaurants
+                  </label>
+              </div>
+              <div>
+                  <label class="btn-toggle-label" for="map-style-toggle">
+                      Map style
+                  </label>
+                  <div id="map-style-toggle" class="btn-group btn-group-toggle" data-toggle="buttons">
+                      <label id="map-style-dark" class="btn btn-secondary btn-sm active">
+                          <input type="radio" name="options" autocomplete="off" checked> Dark
+                      </label>
+                      <label id="map-style-light" class="btn btn-secondary btn-sm">
+                          <input type="radio" name="options" autocomplete="off"> Light
+                      </label>
+                  </div>
+              </div>
+          </article>
+      </div>
+  </div>
+  <svg id="heatmap_legend"></svg>
 </div>
-
 <!-- <div id="options-sidebar" class="sidebar sidebar-right">
     <div class="dismiss">
         <i class="fas fa-arrow-right"></i>

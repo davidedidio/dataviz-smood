@@ -62,6 +62,8 @@ class HeatMap {
 			detectRetina: true
 		});
 
+		this.create_color_legend()
+
 		this.mymap = this.create_map();
 		this.layer = L.canvas({ padding: 0.4 });
 		this.lines = [];
@@ -73,8 +75,68 @@ class HeatMap {
 	set_map_style(new_style) {
 		this.style = new_style;
 		this.tiles.setUrl(this.tile_url.replace('STYLE', this.style));
-
+		this.create_color_legend();
 		this.update_map();
+	}
+
+	create_color_legend(){
+		let scale;
+
+		let svg = d3.select("#heatmap_legend")
+		let text_color;
+		if (this.style == 'dark'){
+			scale = d3.scaleSequential((x) => d3.interpolateInferno(0.2 + 0.8 * x)).domain([0, 1000]);
+			svg.style("color", "white")
+			text_color = "white"
+		}else{
+			scale = d3.scaleSequential((x) => d3.interpolateYlOrRd(0.2 + 0.8 * x)).domain([0, 1000]);
+			svg.style("color", "black")
+			text_color = "black"
+		}
+
+		svg.selectAll("*").remove()
+
+		let width = parseInt(svg.style("width"))-40;
+		let height = parseInt(svg.style("height"));
+		let barHeight = 20;
+
+		let axisScale = d3.scalePow().exponent(0.5)
+    	.domain(scale.domain())
+    	.range([0, width])
+		let axis = d3.axisLeft(this.axisScale);
+
+		svg.append('g')
+			 .append("rect")
+				.attr("width", width)
+				.attr("height", barHeight)
+				.attr('transform', `translate(0, ${-barHeight})`)
+				.style("fill", "url(#linear-gradient)");
+
+	  svg.select('g').attr("class", `x-axis`)
+	  .attr("transform", `translate(0,${height})`)
+	  .call(d3.axisBottom(axisScale)
+		.tickValues([0, 100, 200, 500, 1000])
+	  	.ticks(width/40)
+	    .tickSize(-barHeight))
+
+		let linearGradient = svg.append("defs").append("linearGradient")
+      .attr("id", "linear-gradient");
+		linearGradient.selectAll("stop")
+    	.data(axisScale.ticks().map((t, i, n) => ({ offset: `${100*i/n.length}%`, color: scale(t) })))
+		  .enter().append("stop")
+		  .attr("offset", d => d.offset)
+		  .attr("stop-color", d => d.color);
+
+		svg.select('g')
+		 	.attr("transform", `translate(20, 40)`)
+			.append('text')
+				.attr("x", width / 2)
+				.attr("y", 30)
+				.attr("font-size", "1.5em")
+				.style("text-anchor", "middle")
+				.style("fill", text_color)
+				.text("Nb. deliveries");
+
 	}
 
 	create_map() {
@@ -187,14 +249,14 @@ class HeatMap {
 		let old_layer = this.old_layer;
 		let old_rest_markers_group = this.old_rest_markers_group;
 		if(this.old_layer != undefined){
-			$(this.old_layer._container).animate({ opacity: 0 }, 2000, () => {
+			$(this.old_layer._container).animate({ opacity: 0 }, 800, () => {
 				old_line.forEach((l) => l.remove())
 				old_layer.remove();
 				this.mymap.removeLayer(old_rest_markers_group);
 			});
 		}
 
-		$(this.layer._container).animate({ opacity: 1 }, 2000, () => {});
+		$(this.layer._container).animate({ opacity: 1 }, 800, () => {});
 	}
 
 	get_marker_radius(zoom) {
