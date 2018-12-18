@@ -28,7 +28,7 @@ class Clock{
         this.intervalLoop();
         this.interval = setInterval(() => {
             this.intervalLoop();
-        }, 1500);
+        }, 900);
       }
   	});
 
