@@ -37,6 +37,8 @@ svg#heatmap_legend{
 .btn-primary:hover, .btn-primary:not(:disabled):not(.disabled):active{
 	color: rgba(0,0,0,.96);
 	box-shadow: 0 1px 5px rgba(121, 18, 0, 0.8);
+	background: linear-gradient(#a32d5d, #d24e37);
+	border: none;
 }
 
 .btn-primary.focus, .btn-primary:focus {
@@ -50,6 +52,10 @@ svg#heatmap_legend{
 .btn-link:hover{
 	color: rgba(255,255,255,.85);
 	text-decoration: none;
+}
+
+.leaflet-container .leaflet-control-attribution a {
+    color: rgb(100,100,100);
 }
 
 .map-style-light .btn-link{
@@ -68,7 +74,6 @@ svg#heatmap_legend{
 
 .leaflet-container{
 	font: inherit!important;
-	font-size: 13px!important;
 }
 
 nav.bg-dark {
@@ -123,6 +128,7 @@ nav a:hover {
 }
 
 .leaflet-control-container .leaflet-left{
+	left: 300px;
 	-webkit-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s;
@@ -304,22 +310,23 @@ nav a:hover {
 /****ABOUT MODAL****/
 
 .modal-content {
-	color: rgba(255,255,255,.7);
+	color: rgba(255,255,255,.6);
     background-color: #212529;
     border: none;
     border-radius: .2rem;
     box-shadow: 0 1px 5px rgba(0,0,0,.3);
+    margin-bottom: 5vh;
 }
 
 .map-style-light .modal-content {
-	color: rgba(0,0,0,.7);
+	color: rgba(0,0,0,.6);
     background-color: #fff;
     box-shadow: 0 1px 5px rgba(0,0,0,.1);
 }
 
 .modal-title {
 	margin: 0 auto;
-	color: rgba(255,255,255,.8);
+	color: rgba(255,255,255,.7);
 	font-weight: 400;
 }
 
@@ -344,7 +351,30 @@ nav a:hover {
 }
 
 .modal-body {
-    padding: 3rem;
+    padding: 2rem 3rem;
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal a:hover {
+    color: rgba(255,255,255,1);
+    text-decoration: none;
+    border-bottom: 2px solid rgba(255,255,255,.3);
+}
+.modal a {
+    color: rgba(255,255,255,.8);
+    transition: all .3s;
+    padding-bottom: 3px;
+}
+
+.map-style-light .modal a:hover {
+    color: rgba(0,0,0,1);
+    border-bottom: 2px solid rgba(0,0,0,.3);
+}
+.map-style-light .modal a {
+    color: rgba(0,0,0,.8);
 }
 
 .modal-backdrop.show {
@@ -359,6 +389,16 @@ nav a:hover {
 
 .custom-popup .leaflet-popup-content {
 	margin: 14px 16px;
+}
+
+.popup-notip .leaflet-popup-tip-container{
+	display: none;
+}
+
+.popup-tip-left .leaflet-popup-tip-container{
+    left: -10px;
+    transform: rotate(90deg);
+    top: 20px;
 }
 
 .custom-popup .leaflet-popup-content-wrapper, .custom-popup .leaflet-popup-tip {
@@ -393,4 +433,50 @@ nav a:hover {
 	margin-top: 5px;
 	margin-left: 3px;
 	color: rgba(255,255,255,.5);
+}
+
+/****TOP MESSAGE****/
+#top-message-container{
+	position: absolute;
+	top: 66px;
+	z-index: 990;
+	width: 100%;
+	height: 48px;
+	pointer-events: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.top-message {
+	/*margin: 8px auto;*/
+    left: 100px;
+    padding: 4px 16px;
+    min-height: 32px;
+    border-radius: 30px;
+    font-size: 14px;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+    pointer-events: all;
+    opacity: 1;
+    display: inline-block;
+}
+
+.top-message svg{
+	font-size: 10px;
+	position: relative;
+	color: #a32d5d;
+	margin-right: 8px;
+}
+
+#start-story:hover {
+	background-color: #1c1f21!important;
+	color: rgba(255,255,255,.85)!important;
+	cursor: pointer;
+}
+
+.map-style-light #start-story:hover {
+	background-color: #fff!important;
+	color: rgba(0,0,0,.85)!important;
 }

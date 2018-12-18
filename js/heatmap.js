@@ -15,8 +15,9 @@ function parse_csv_list(data){
 }
 
 function on_polyline_click(e){
+	story.close_start_button();
 	let road_ids = this.options["road_ids"];
-	//console.log(road_ids);
+	console.log(road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([]);
 	heatmap.update_map();
@@ -24,9 +25,11 @@ function on_polyline_click(e){
 }
 
 function on_rest_click(e){
+	story.close_start_button();
 	let road_ids = this.options["road_ids"];
 	let rest_id = this.options["rest_id"];
-
+	console.log(e.latlng.lat, e.latlng.lng);
+	console.log([rest_id], road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([rest_id]);
 	heatmap.update_map();
@@ -34,6 +37,8 @@ function on_rest_click(e){
 }
 
 function on_map_click(e){
+	story.close_start_button();
+	console.log(e.latlng.lat, e.latlng.lng);
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
 	heatmap.set_selected_restaurants([]);
@@ -240,6 +245,8 @@ class HeatMap {
 		this.old_lines = this.lines;
 		this.lines=[];
 
+		insights.update(intersect_arrays(this.road_ids, this.time_ids));
+
 		this.show_roads()
 		this.show_restaurants()
 
@@ -322,44 +329,9 @@ class HeatMap {
 
 whenDocumentLoaded(() => {
 	$("#nav_map").addClass("active")
-	d3.csv(URL_FULL + BASE_URL + "/data/heatmap_data.csv",
-    function(d) {
-      return {
-          lat1 : d.lat1,
-          lon1 : d.lon1,
-          lat2 : d.lat2,
-          lon2 : d.lon2,
-          heat : d.heat,
-					id	 : parse_csv_list(d.id)
-        };
-    }).then(function(data) {
-			heatmap = new HeatMap(data)
-			story = new Story();
 
-			d3.csv(URL_FULL + BASE_URL + "/data/restaurants.csv",
-		    function(d) {
-		      return {
-		          plat : d.plat,
-		          plng : d.plng,
-		          road_ids: parse_csv_list(d.paths_ids)
-		        };
-		    }).then(function(data) {
-					heatmap.r_data = data
-			  	heatmap.update_map();
-		    },);
 
-    },);
 
-		d3.csv(URL_FULL + BASE_URL + "/data/time_data.csv",
-			function(d) {
-				return {
-						time : d.time,
-						ids : parse_csv_list(d.indices)
-					};
-			}).then(function(data) {
-				clock = new Clock(data)
-				clock.setCaptions("all");
-			},);
 
     $('#map-style-dark').click(function() {
 		$('body').removeClass('map-style-light')

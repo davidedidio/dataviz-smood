@@ -4,13 +4,21 @@ title: Colorful Traces
 ---
 <div id="mapid"></div>
 
-<div id="insights-sidebar" class="sidebar sidebar-left">
+
+<div id="insights-sidebar" class="sidebar sidebar-left active">
     <div class="dismiss">
         <i class="fas fa-arrow-left"></i>
     </div>
     <div class="sidebar-header">
-        <h5>Insights</h3>
+        <h5>Insights</h5>
     </div>
+    <div id="title1">All deliveries throughout the timeperiod:</div>
+    <figure id="hist"></figure>
+    <div id="title2">Number of trips by distance crossed:</div>
+      <figure id="distances">    </figure>
+
+      <div id="title3" style="{display:none}">Number of trips by duration of the trip:</div>
+        <figure id="durations">    </figure>
 </div>
 
 {% include clock.html %}
@@ -49,14 +57,9 @@ title: Colorful Traces
   </div>
   <svg id="heatmap_legend"></svg>
 </div>
-<!-- <div id="options-sidebar" class="sidebar sidebar-right">
-    <div class="dismiss">
-        <i class="fas fa-arrow-right"></i>
-    </div>
-    <div class="sidebar-header">
-        <h5>Options</h3>
-    </div>
-    <div id='sidebar-content'>
 
+<div id='top-message-container'>
+    <div class="map-panel top-message start-story" id='start-story'>
+        <i class="fas fa-play"></i>Start Story
     </div>
-</div> -->
+</div>

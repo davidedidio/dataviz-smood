@@ -13,6 +13,8 @@ class Clock{
         $('.rs-pointer').addClass("playing_animation")
         $('.rs-selected').addClass("playing_animation")
 
+        heatmap.set_road_ids([...Array(2000).keys()]);
+
         let vals = this.slider.getValue();
         let times = data.map((x) => x.time);
         let v = vals.split(",")
@@ -26,7 +28,7 @@ class Clock{
         this.intervalLoop();
         this.interval = setInterval(() => {
             this.intervalLoop();
-        }, 1500);
+        }, 900);
       }
   	});
 
