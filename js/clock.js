@@ -10,9 +10,7 @@ class Clock{
       }else{
         this.is_playing = true;
         $('#start-button svg').attr('data-icon', 'pause');
-        $('.rs-pointer').addClass("playing_animation")
-        $('.rs-selected').addClass("playing_animation")
-
+        this.slider.disabled(true);
         heatmap.set_road_ids([...Array(2000).keys()]);
 
         let vals = this.slider.getValue();
@@ -24,10 +22,14 @@ class Clock{
           this.index = 0;
         }
 
-
         this.intervalLoop();
+
         this.interval = setInterval(() => {
-            this.intervalLoop();
+          if(!$('.rs-pointer').hasClass("playing_animation")){
+            $('.rs-pointer').addClass("playing_animation")
+            $('.rs-selected').addClass("playing_animation")
+          }
+          this.intervalLoop();
         }, 900);
       }
   	});
@@ -64,6 +66,7 @@ class Clock{
 
   stop_animation(){
     this.is_playing = false;
+    this.slider.disabled(false);
     $('#start-button svg').attr('data-icon', 'play');
     $('.rs-pointer').removeClass("playing_animation");
     $('.rs-selected').removeClass("playing_animation");
