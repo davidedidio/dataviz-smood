@@ -36,7 +36,7 @@ class Histogram{
 	build(){
 	 	let margin = {top: 7, right: 10, bottom: 25, left: 32};
 	    this.width = 280 - margin.left - margin.right;
-	    this.height = 200 - margin.top - margin.bottom;
+	    this.height = 198 - margin.top - margin.bottom;
 
 		this.svg = d3.select(this.id).append("svg")
 						.attr("class","histograms")
@@ -68,7 +68,7 @@ class Histogram{
 		this.svg.append("g")
 			.attr("class", "y-axis")
 
-		let label_color = 'rgba(255,255,255,.6)'
+		let label_color = 'rgba(255,255,255,.8)'
 		// text label for the x axis
 		this.svg.append("text")
 		       .attr("transform",
@@ -76,7 +76,7 @@ class Histogram{
 		                            (this.height + margin.top) + ")")
 		       .style("text-anchor", "middle")
 				.style("fill", label_color)
-				.style("font-size", "0.8em")
+				.style("font-size", "0.9em")
 		       .text(this.xLabel);
 
 
@@ -88,7 +88,7 @@ class Histogram{
 	       .attr("dy", "1em")
 	       .style("text-anchor", "middle")
 			 .style("fill", label_color)
-			 .style("font-size", "0.8em")
+			 .style("font-size", "0.9em")
 	       .text(this.yLabel);
 
 		this.update(this.data, 0)

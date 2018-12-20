@@ -37,7 +37,7 @@ function on_rest_click(e){
 
 function on_map_click(e){
 	story.close_start_button();
-	// console.log(e.latlng.lat, e.latlng.lng);
+	console.log(e.latlng.lat, e.latlng.lng);
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
 	heatmap.set_selected_restaurants([]);
@@ -90,12 +90,12 @@ class HeatMap {
 		let text_color;
 		if (this.style == 'dark'){
 			scale = d3.scaleSequential((x) => d3.interpolateInferno(0.2 + 0.8 * x)).domain([0, 1000]);
-			svg.style("color", "white")
-			text_color = "white"
+			text_color = "rgba(255,255,255,.7)"
+			svg.style("color", text_color)
 		}else{
 			scale = d3.scaleSequential((x) => d3.interpolateYlOrRd(0.2 + 0.8 * x)).domain([0, 1000]);
-			svg.style("color", "black")
-			text_color = "black"
+			text_color = "rgba(0,0,0,.6)"
+			svg.style("color", text_color)
 		}
 
 		svg.selectAll("*").remove()
@@ -136,10 +136,10 @@ class HeatMap {
 			.append('text')
 				.attr("x", width / 2)
 				.attr("y", 30)
-				.attr("font-size", "1.5em")
+				.attr("font-size", "1.25em")
 				.style("text-anchor", "middle")
 				.style("fill", text_color)
-				.text("Nb. deliveries");
+				.text("Number of deliveries");
 
 	}
 
@@ -149,7 +149,7 @@ class HeatMap {
 		let mymap = L.map('mapid',{
 			 trackResize: false,
 			 renderer: myCanvas
-		}).setView([46.526, 6.635], 13);
+		}).setView([46.526, 6.615], 13);
 
 		this.tiles.addTo(mymap);
 		mymap.on("click", on_map_click);
