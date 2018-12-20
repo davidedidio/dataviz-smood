@@ -16,7 +16,7 @@ function parse_csv_list(data){
 
 function on_polyline_click(e){
 	let road_ids = this.options["road_ids"];
-	console.log(road_ids);
+	// console.log(road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([]);
 	heatmap.update_map();
@@ -159,8 +159,6 @@ class HeatMap {
 		this.set_time_ids([...Array(2000).keys()]);
 		this.set_selected_restaurants([]);
 		this.update_map();
-
-		$('#navbar-msg').text('Showing all deliveries')
 	}
 
 	get_line_weight(zoom) {
@@ -273,15 +271,19 @@ class HeatMap {
 		
 		if (!road_selected && !time_selected && !rest_selected) {
 			$('#navbar-msg').text('Showing all deliveries');
+			$('#navbar-reset').css('display', 'none');
 		} 
 		else if (road_selected && !rest_selected) {
 			$('#navbar-msg').text('Showing deliveries through one point'+time_msg);
+			$('#navbar-reset').css('display', 'block');
 		}
 		else if (!road_selected && !rest_selected) {
 			$('#navbar-msg').text('Showing deliveries'+time_msg);
+			$('#navbar-reset').css('display', 'block');
 		}
 		else if (road_selected && rest_selected) {
 			$('#navbar-msg').text('Showing deliveries from one restaurant'+time_msg);
+			$('#navbar-reset').css('display', 'block');
 		}
 	}
 

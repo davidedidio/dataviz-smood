@@ -108,6 +108,7 @@ nav a:hover {
 #navbar-reset {
     margin-right: -41px;
     margin-left: -5px;
+    display: none;
 }
 
 .navbar-dark .navbar-nav #navbar-msg:hover {
