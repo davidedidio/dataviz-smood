@@ -15,7 +15,6 @@ function parse_csv_list(data){
 }
 
 function on_polyline_click(e){
-	story.close_start_button();
 	let road_ids = this.options["road_ids"];
 	// console.log(road_ids);
 	heatmap.set_road_ids(road_ids);
@@ -25,7 +24,6 @@ function on_polyline_click(e){
 }
 
 function on_rest_click(e){
-	story.close_start_button();
 	let road_ids = this.options["road_ids"];
 	let rest_id = this.options["rest_id"];
 	// console.log([rest_id], road_ids);
@@ -36,7 +34,6 @@ function on_rest_click(e){
 }
 
 function on_map_click(e){
-	story.close_start_button();
 	console.log(e.latlng.lat, e.latlng.lng);
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
