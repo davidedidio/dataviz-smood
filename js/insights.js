@@ -175,7 +175,7 @@ class Insights{
 
 whenDocumentLoaded(() => {
 
-  d3.csv(URL_FULL + BASE_URL + "/data/dataviz_lat_lon.csv",
+  d3.csv(URL_FULL + BASE_URL + "/data/insights_data.csv",
     function(d) {
       return {
           	time : d.t,

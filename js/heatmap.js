@@ -16,7 +16,7 @@ function parse_csv_list(data){
 
 function on_polyline_click(e){
 	let road_ids = this.options["road_ids"];
-	// console.log(road_ids);
+	console.log(road_ids);
 	heatmap.set_road_ids(road_ids);
 	heatmap.set_selected_restaurants([]);
 	heatmap.update_map();
