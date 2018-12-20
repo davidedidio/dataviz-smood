@@ -158,11 +158,14 @@ class HeatMap {
 		this.set_road_ids([...Array(2000).keys()]);
 		this.set_time_ids([...Array(2000).keys()]);
 		this.set_selected_restaurants([]);
-		this.update_map();
+		let clock_data = clock.data;
+		clock.slider.setValues(clock_data[0].time, clock_data[clock_data.length-1].time)
+		// No need to update, the clock already fires the update.
+		//this.update_map();
 	}
 
 	get_line_weight(zoom) {
-		return Math.max(1,this.mymap.getZoom()- 11)
+		return Math.max(1,this.mymap.getZoom()- 10)
 	}
 
 	show_roads() {
@@ -268,11 +271,11 @@ class HeatMap {
 	        }
 	        time_msg = ' '+time_msg;
 		}
-		
+
 		if (!road_selected && !time_selected && !rest_selected) {
 			$('#navbar-msg').text('Showing all deliveries');
 			$('#navbar-reset').css('display', 'none');
-		} 
+		}
 		else if (road_selected && !rest_selected) {
 			$('#navbar-msg').text('Showing deliveries through one point'+time_msg);
 			$('#navbar-reset').css('display', 'block');
@@ -316,7 +319,7 @@ class HeatMap {
 	}
 
 	get_marker_radius(zoom) {
-		return Math.max(1, this.mymap.getZoom()-11)
+		return Math.max(1, this.mymap.getZoom()-10)
 	}
 
 	show_restaurants() {
