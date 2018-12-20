@@ -6,19 +6,24 @@ title: Colorful Traces
 
 
 <div id="insights-sidebar" class="sidebar sidebar-left active">
-    <div class="dismiss">
-        <i class="fas fa-arrow-left"></i>
-    </div>
-    <div class="sidebar-header">
-        <h5>Insights</h5>
-    </div>
-    <div id="title1">All deliveries throughout the timeperiod:</div>
-    <figure id="hist"></figure>
-    <div id="title2">Number of trips by distance crossed:</div>
-      <figure id="distances">    </figure>
+  <div class="dismiss">
+    <i class="fas fa-arrow-left"></i>
+  </div>
+  <div class="sidebar-header">
+    <h5>Insights</h5>
+  </div>
 
-      <div id="title3" style="{display:none}">Number of trips by duration of the trip:</div>
-        <figure id="durations">    </figure>
+  <div class="sidebar-content">
+    <div class="title">Deliveries throughout the day</div>
+    <figure id="time-hist"></figure>
+
+    <div class="title">Delivery distance</div>
+    <figure id="distance-hist"></figure>
+
+    <div class="title">Delivery duration</div>
+    <figure id="duration-hist">    </figure>
+  </div>
+  
 </div>
 
 {% include clock.html %}

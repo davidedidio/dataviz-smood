@@ -129,12 +129,16 @@ nav a:hover {
     right: -300px;
     height: 100vh;
     z-index: 999;
-    background: #393e42;
+    background: #323639;
     color: #fff;
     -webkit-transition: all 0.3s;
     -o-transition: all 0.3s;
     transition: all 0.3s;
     overflow-y: scroll;
+}
+
+.sidebar .sidebar-content {
+    padding: 10px;
 }
 
 .leaflet-control-container .leaflet-left{
@@ -184,6 +188,22 @@ nav a:hover {
     left: 0;
 }
 
+#insights-sidebar figure{
+	margin: 0 0 0.3rem;
+}
+
+#time-hist .bar {
+    fill: #a32d5d;
+}
+
+#distance-hist .bar {
+    fill: #b83e4d;
+}
+
+#duration-hist .bar {
+    fill: #d24e37;
+}
+
 .dismiss {
     width: 35px;
     height: 35px;
@@ -206,6 +226,13 @@ nav a:hover {
     padding: 14px 20px 10px 55px;
     height: 56px;
     background: rgba(0,0,0,.1);
+    margin-bottom: 10px;
+}
+
+.sidebar .title {
+    margin: 0 20px 2px;
+    text-align: center;
+    font-size: 0.85em;
 }
 
 #right-panel{
