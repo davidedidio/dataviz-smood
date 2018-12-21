@@ -407,7 +407,9 @@ whenDocumentLoaded(() => {
 	});
 
 	$('#navbar-reset').click(function() {
-		heatmap.reset()
+		if(this.getAttribute("disabled") != "disabled"){
+			heatmap.reset()
+		}
 	});
 
 
