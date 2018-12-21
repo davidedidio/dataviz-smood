@@ -1,3 +1,7 @@
+body {
+    font-weight: 300;
+}
+
 .btn {
 	font-weight: 500;
 }
@@ -101,7 +105,7 @@ nav a:hover {
 }
 
 #navbar-msg {
-    font-weight: 500;
+    font-weight: 400;
     color: white;
 }
 
@@ -440,7 +444,7 @@ svg#heatmap_legend .domain{
 /****POP-UP****/
 
 .custom-popup .leaflet-popup-content {
-	margin: 14px 16px;
+    margin: 16px 18px;
 }
 
 .popup-notip .leaflet-popup-tip-container{

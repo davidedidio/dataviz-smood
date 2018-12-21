@@ -128,13 +128,6 @@ class Histogram{
 			.attr("x", d => this.x(d.x0) + 1)
 			.attr("y", d => this.y(d.length))
 			.attr("height", d => this.y(0) - this.y(d.length))
-
-		// bar.exit()
-  //       .transition()
-  //       .duration(speed)
-  //       .attr('height', 0)
-  //       .attr('y', this.height)
-  //       .remove();
 	}
 }
 

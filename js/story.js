@@ -24,7 +24,7 @@ class Story{
         action: "null",
         class: "popup-notip"
       },{
-        text:"By clicking on a road, one can select all deliveries that go through it. Try it by yourself!!",
+        text:"By clicking on a road, one can select all deliveries that go through it. Try it by yourself!",
         latlng: L.latLng(46.5454, 6.63),
         action: "null",
         class: "popup-notip"
