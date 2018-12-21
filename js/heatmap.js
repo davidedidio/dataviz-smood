@@ -34,7 +34,7 @@ function on_rest_click(e){
 }
 
 function on_map_click(e){
-	console.log(e.latlng.lat, e.latlng.lng);
+	//console.log(e.latlng.lat, e.latlng.lng);
 	// Reset selected paths and show everything
 	heatmap.set_road_ids([...Array(2000).keys()]);
 	heatmap.set_selected_restaurants([]);
